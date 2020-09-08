@@ -24,6 +24,9 @@ public class AbstractController {
     @Value("${scsb.etl.url}")
     private String scsbEtlUrl;
 
+    @Value("${scsb.core.url}")
+    private String scsbCoreUrl;
+
 
     @Autowired
     RestHeaderService restHeaderService;
@@ -45,8 +48,20 @@ public class AbstractController {
         return scsbSolrClient;
     }
 
+    /**
+     * Gets scsb etl url.
+     * @return the scsb etl url
+     */
     public String getScsbEtlUrl() {
         return scsbEtlUrl;
+    }
+
+    /**
+     * Gets scsb core url.
+     * @return the scsb core url
+     */
+    public String getScsbCoreUrl() {
+        return scsbCoreUrl;
     }
 
 

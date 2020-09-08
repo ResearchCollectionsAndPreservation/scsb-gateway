@@ -149,7 +149,7 @@ public class SharedCollectionRestController extends AbstractController {
         try {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
-            String responseMessage = getRestTemplate().postForObject(getScsbSolrClientUrl() + "sharedCollection/accessionBatch", accessionRequestList, String.class);
+            String responseMessage = getRestTemplate().postForObject(getScsbCoreUrl() + "sharedCollection/accessionBatch", accessionRequestList, String.class);
             ResponseEntity responseEntity = new ResponseEntity(responseMessage, getHttpHeaders(), HttpStatus.OK);
             stopWatch.stop();
             logger.info("Total time taken for saving accession request-->{}sec", stopWatch.getTotalTimeSeconds());
@@ -175,7 +175,7 @@ public class SharedCollectionRestController extends AbstractController {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
             ResponseEntity responseEntity;
-            List<LinkedHashMap> linkedHashMapList = getRestTemplate().postForObject(getScsbSolrClientUrl() + "sharedCollection/accession", accessionRequestList, List.class);
+            List<LinkedHashMap> linkedHashMapList = getRestTemplate().postForObject(getScsbCoreUrl() + "sharedCollection/accession", accessionRequestList, List.class);
             if (null != linkedHashMapList && linkedHashMapList.get(0).get("message").toString().contains(RecapConstants.ONGOING_ACCESSION_LIMIT_EXCEED_MESSAGE)) {
                 responseEntity = new ResponseEntity(linkedHashMapList, getHttpHeaders(), HttpStatus.BAD_REQUEST);
             } else {
