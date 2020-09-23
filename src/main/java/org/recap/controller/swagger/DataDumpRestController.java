@@ -71,7 +71,7 @@ public class DataDumpRestController extends AbstractController  {
             HttpHeaders responseHeaders = getHttpHeaders();
             responseHeaders.add(RecapCommonConstants.RESPONSE_HEADER_CONTENT_TYPE,RecapCommonConstants.RESPONSE_HEADER_CONTENT_TYPE_VALUE);
             ResponseEntity<String> response = restTemplate.exchange(getScsbEtlUrl() + "dataDump/exportDataDump/?institutionCodes={institutionCodes}&requestingInstitutionCode={requestingInstitutionCode}&fetchType={fetchType}&outputFormat={outputFormat}&date={date}&collectionGroupIds={collectionGroupIds}&transmissionType={transmissionType}&emailToAddress={emailToAddress}", HttpMethod.GET, requestEntity, String.class, inputMap);
-            return new ResponseEntity(response.getBody(), responseHeaders, getHttpStatus(response.getBody()));
+            return new ResponseEntity(response.getBody(), responseHeaders, response.getStatusCode());
         } catch (Exception exception) {
             logger.error("error-->",exception);
             return new ResponseEntity<>("Scsb Etl Service is Unavailable.", getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
@@ -114,7 +114,8 @@ public class DataDumpRestController extends AbstractController  {
         try {
             HttpEntity requestEntity = getSwaggerHttpEntity();
             ResponseEntity<String> response = restTemplate.exchange(getScsbEtlUrl() + "dataDump/exportDataDump/?institutionCodes={institutionCodes}&requestingInstitutionCode={requestingInstitutionCode}&fetchType={fetchType}&outputFormat={outputFormat}&date={date}&toDate={toDate}&collectionGroupIds={collectionGroupIds}&transmissionType={transmissionType}&emailToAddress={emailToAddress}", HttpMethod.GET, requestEntity, String.class, inputMap);
-            return new ResponseEntity(response.getBody(), getHttpHeaders(), getHttpStatus(response.getBody()));
+            return new ResponseEntity(response.getBody(), getHttpHeaders(), response.getStatusCode());
+
         } catch (Exception exception) {
             logger.error("error-->",exception);
             return new ResponseEntity("Scsb Etl Service is Unavailable.", getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
