@@ -84,6 +84,11 @@ dependencies {
 	testAnnotationProcessor('org.projectlombok:lombok:1.18.12')
 	runtime('mysql:mysql-connector-java')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
+
+	implementation 'org.springframework.cloud:spring-cloud-starter-config'
+	implementation 'org.springframework.cloud:spring-cloud-starter-bus-amqp'
+	implementation 'org.json:json:20200518'
+	implementation 'com.google.code.gson:gson:2.8.6'
 }
 
 dependencyManagement {

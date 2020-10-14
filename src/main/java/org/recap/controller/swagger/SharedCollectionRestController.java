@@ -220,7 +220,7 @@ public class SharedCollectionRestController extends AbstractController {
             requestParameter.add(RecapCommonConstants.INPUT_RECORDS,inputRecords);
             requestParameter.add(RecapCommonConstants.INSTITUTION,institution);
             requestParameter.add(RecapCommonConstants.IS_CGD_PROTECTED,isCGDProtected);
-            List<LinkedHashMap> linkedHashMapList =getRestTemplate().postForObject(getScsbCircUrl() + "sharedCollection/submitCollection",requestParameter, List.class);
+            List<LinkedHashMap> linkedHashMapList =getRestTemplate().postForObject(getScsbCoreUrl() + "sharedCollection/submitCollection",requestParameter, List.class);
             String message = linkedHashMapList != null ? linkedHashMapList.get(0).get("message").toString(): RecapConstants.SUBMIT_COLLECTION_INTERNAL_ERROR;
             if (message.equalsIgnoreCase(RecapConstants.INVALID_MARC_XML_FORMAT_MESSAGE) || message.equalsIgnoreCase(RecapConstants.INVALID_SCSB_XML_FORMAT_MESSAGE)
                     || message.equalsIgnoreCase(RecapConstants.SUBMIT_COLLECTION_INTERNAL_ERROR)) {
