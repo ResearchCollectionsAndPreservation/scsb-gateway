@@ -72,9 +72,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
-	implementation 'org.springframework.cloud:spring-cloud-starter-zipkin'
-	implementation 'org.springframework.amqp:spring-rabbit'
-	implementation 'net.logstash.logback:logstash-logback-encoder:6.4'	
+	implementation 'net.logstash.logback:logstash-logback-encoder:6.4'
+
+	implementation 'org.springframework.cloud:spring-cloud-starter-config'
+	implementation 'org.springframework.cloud:spring-cloud-starter-bus-amqp'
+	implementation 'org.json:json:20200518'
+	implementation 'com.google.code.gson:gson:2.8.6'
+
 	annotationProcessor('org.projectlombok:lombok:1.18.12')
 	testImplementation('org.projectlombok:lombok:1.18.12')
 	testAnnotationProcessor('org.projectlombok:lombok:1.18.12')
