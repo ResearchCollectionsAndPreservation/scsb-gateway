@@ -32,7 +32,7 @@ import static org.junit.Assert.assertNull;
  */
 public class ReportsRestControllerUT extends BaseControllerUT {
 
-    @Value("${scsb.solr.client.url}")
+    @Value("${scsb.solr.doc.url}")
     String scsbSolrClientUrl;
 
     @Mock
