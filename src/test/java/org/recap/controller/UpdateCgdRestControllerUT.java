@@ -26,7 +26,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class UpdateCgdRestControllerUT extends BaseControllerUT {
 
-    @Value("${scsb.solr.client.url}")
+    @Value("${scsb.solr.doc.url}")
     String scsbSolrClient;
 
     @Mock

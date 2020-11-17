@@ -48,7 +48,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class SharedCollectionRestControllerUT extends BaseControllerUT {
 
-    @Value("${scsb.solr.client.url}")
+    @Value("${scsb.solr.doc.url}")
     String scsbSolrClientUrl;
 
     @Value("${scsb.circ.url}")

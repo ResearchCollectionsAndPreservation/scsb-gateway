@@ -31,7 +31,7 @@ import static org.junit.Assert.assertNull;
  */
 public class SearchRecordsRestControllerUT extends BaseTestCase{
 
-    @Value("${scsb.solr.client.url}")
+    @Value("${scsb.solr.doc.url}")
     String scsbSolrClient;
 
     @Mock

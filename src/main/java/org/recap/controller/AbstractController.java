@@ -18,7 +18,7 @@ public class AbstractController {
     @Value("${scsb.circ.url}")
     private String scsbCircUrl;
 
-    @Value("${scsb.solr.client.url}")
+    @Value("${scsb.solr.doc.url}")
     private String scsbSolrClient;
 
     @Value("${scsb.etl.url}")
