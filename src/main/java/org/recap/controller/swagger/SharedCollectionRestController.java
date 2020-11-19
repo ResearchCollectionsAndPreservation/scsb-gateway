@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.recap.RecapCommonConstants;
 import org.recap.RecapConstants;
 import org.recap.controller.AbstractController;
-import org.recap.model.AccessionRequest;
+import org.recap.model.AccessionModelRequest;
 import org.recap.model.BibItemAvailabityStatusRequest;
 import org.recap.model.ItemAvailabityStatusRequest;
 import org.recap.model.acession.AccessionResponse;
@@ -137,7 +137,7 @@ public class SharedCollectionRestController extends AbstractController {
     }
 
     /**This method will call scsb-solr-client microservice to add multiple new items in the scsb database and scsb solr.
-     * @param accessionRequestList the accession request list
+     * @param accessionModelRequest the accession request list
      * @return the response entity
      */
     @PostMapping(value = "/accessionBatch", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -145,11 +145,11 @@ public class SharedCollectionRestController extends AbstractController {
             notes = "Accession batch is similar to the accession API except that accession batch API accepts multiple item barcodes in a single request call. The Accession batch process is a deferred process to reduce performance bottlenecks. The barcodes and customer codes are stored in SCSB DB and is processed as per schedule of the Accession job (usually, nightly). After processing, a report on the barcodes that were processed is prepared and stored at the FTP location.", nickname = "accessionBatch")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "OK")})
     @ResponseBody
-    public ResponseEntity accessionBatch(@ApiParam(value = "Item Barcode and Customer Code", required = true, name = "Item Barcode And Customer Code") @RequestBody List<AccessionRequest> accessionRequestList) {
+    public ResponseEntity accessionBatch(@ApiParam(value = "Item Barcode and Customer Code", required = true, name = "Item Barcode And Customer Code") @RequestBody AccessionModelRequest accessionModelRequest) {
         try {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
-            String responseMessage = getRestTemplate().postForObject(getScsbCoreUrl() + "sharedCollection/accessionBatch", accessionRequestList, String.class);
+            String responseMessage = getRestTemplate().postForObject(getScsbCoreUrl() + "sharedCollection/accessionBatch", accessionModelRequest, String.class);
             ResponseEntity responseEntity = new ResponseEntity(responseMessage, getHttpHeaders(), HttpStatus.OK);
             stopWatch.stop();
             logger.info("Total time taken for saving accession request-->{}sec", stopWatch.getTotalTimeSeconds());
@@ -162,7 +162,7 @@ public class SharedCollectionRestController extends AbstractController {
 
     /**
      * This method will call scsb-solr-client microservice to add a new item in the scsb database and scsb solr.
-     * @param accessionRequestList the accession request list
+     * @param accessionModelRequest the accession request list
      * @return the response entity
      */
     @PostMapping(value = "/accession", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -170,12 +170,12 @@ public class SharedCollectionRestController extends AbstractController {
             notes = "The Accession API (also known as Ongoing Accession) is used to add item records to SCSB whenever there is a new item added to the ReCAP facility. GFA LAS calls this API as part of the accession workflow with the customer code and item barcode.", nickname = "accession")
     @ApiResponses(value = {@ApiResponse(code = 200, message = "OK")})
     @ResponseBody
-    public ResponseEntity accession(@ApiParam(value = "Item Barcode and Customer Code", required = true, name = "Item Barcode And Customer Code") @RequestBody List<AccessionRequest> accessionRequestList) {
+    public ResponseEntity accession(@ApiParam(value = "Item Barcode and Customer Code", required = true, name = "Item Barcode And Customer Code") @RequestBody AccessionModelRequest accessionModelRequest) {
         try {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
             ResponseEntity responseEntity;
-            List<LinkedHashMap> linkedHashMapList = getRestTemplate().postForObject(getScsbCoreUrl() + "sharedCollection/accession", accessionRequestList, List.class);
+            List<LinkedHashMap> linkedHashMapList = getRestTemplate().postForObject(getScsbCoreUrl() + "sharedCollection/accession", accessionModelRequest, List.class);
             if (null != linkedHashMapList && linkedHashMapList.get(0).get("message").toString().contains(RecapConstants.ONGOING_ACCESSION_LIMIT_EXCEED_MESSAGE)) {
                 responseEntity = new ResponseEntity(linkedHashMapList, getHttpHeaders(), HttpStatus.BAD_REQUEST);
             } else {
