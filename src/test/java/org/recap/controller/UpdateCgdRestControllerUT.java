@@ -19,6 +19,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -82,6 +84,7 @@ public class UpdateCgdRestControllerUT extends BaseControllerUT {
         assertNotNull(response);
         assertEquals(RecapCommonConstants.SUCCESS,response);
     }
+
     @Test
     public void updateCgdForItem_Exception() throws Exception {
         String itemBarcode = "3568783121445";
@@ -106,7 +109,7 @@ public class UpdateCgdRestControllerUT extends BaseControllerUT {
         Mockito.when(updateCgdRestController.getRestHeaderService()).thenReturn(restHeaderService);
         Mockito.when(updateCgdRestController.updateCgdForItem(itemBarcode,owningInstitution,oldCollectionGroupDesignation,newCollectionGroupDesignation,cgdChangeNotes, username)).thenCallRealMethod();
         String response = updateCgdRestController.updateCgdForItem(itemBarcode,owningInstitution,oldCollectionGroupDesignation,newCollectionGroupDesignation,cgdChangeNotes, username);
-       // assertNull(response);
+        assertTrue(response.contains(RecapCommonConstants.FAILURE));
     }
 
 }

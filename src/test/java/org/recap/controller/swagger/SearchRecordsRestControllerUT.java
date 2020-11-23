@@ -153,7 +153,7 @@ public class SearchRecordsRestControllerUT extends BaseTestCase{
         Mockito.when(searchRecordsRestController.getRestHeaderService()).thenReturn(restHeaderService);
         Mockito.when(searchRecordsRestController.searchRecordsServiceGet("test","test","PUL","Shared","Available","Monograph","NoRestrictions",10)).thenCallRealMethod();
         List<SearchResultRow> searchResultRows= searchRecordsRestController.searchRecordsServiceGet("test","test","PUL","Shared","Available","Monograph","NoRestrictions",10);
-       // assertNotNull(searchResultRows);
+        assertNotNull(searchResultRows);
     }
 
 

@@ -16,8 +16,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -56,14 +58,14 @@ public class ScheduleJobsControllerUT extends BaseControllerUT {
         ScheduleJobRequest scheduleJobRequest = new ScheduleJobRequest();
         scheduleJobRequest.setJobName(RecapCommonConstants.PURGE_EXCEPTION_REQUESTS);
         scheduleJobRequest.setScheduleType(RecapConstants.SCHEDULE);
-
         ScheduleJobResponse scheduleJobResponse = new ScheduleJobResponse();
         scheduleJobResponse.setMessage("Scheduled");
         ResponseEntity<ScheduleJobResponse> responseEntity = new ResponseEntity<>(scheduleJobResponse, HttpStatus.OK);
         HttpEntity<ScheduleJobRequest> httpEntity = new HttpEntity<>(scheduleJobRequest, restHeaderService.getHttpHeaders());
         Mockito.when(mockRestTemplate.exchange(getScsbScheduleUrl() + RecapCommonConstants.URL_SCHEDULE_JOBS, HttpMethod.POST, httpEntity, ScheduleJobResponse.class)).thenReturn(responseEntity);
         Mockito.when(scheduleJobsController.getRestTemplate()).thenReturn(mockRestTemplate);
-        Mockito.when(scheduleJobsController.getScsbScheduleUrl()).thenReturn(scsbScheduleUrl);
+        ReflectionTestUtils.setField(scheduleJobsController,"scsbScheduleUrl",scsbScheduleUrl);
+        Mockito.when(scheduleJobsController.getScsbScheduleUrl()).thenCallRealMethod();
         Mockito.when(scheduleJobsController.getRestHeaderService()).thenReturn(restHeaderService);
         Mockito.when(scheduleJobsController.scheduleJob(scheduleJobRequest)).thenCallRealMethod();
         ScheduleJobResponse scheduleJobResponse1 = scheduleJobsController.scheduleJob(scheduleJobRequest);
@@ -76,6 +78,13 @@ public class ScheduleJobsControllerUT extends BaseControllerUT {
         Mockito.when(scheduleJobsController.scheduleJob(scheduleJobRequest)).thenCallRealMethod();
         ScheduleJobResponse scheduleJobResponse1 = scheduleJobsController.scheduleJob(scheduleJobRequest);
         assertNull(scheduleJobResponse1.getMessage());
+    }
+
+    @Test
+    public void testcustomLoggerTest() throws Exception {
+        Mockito.when(scheduleJobsController.customLoggerTest()).thenCallRealMethod();
+        ScheduleJobResponse scheduleJobResponse1 = scheduleJobsController.customLoggerTest();
+        assertEquals("Scheduler job response",scheduleJobResponse1.getMessage());
     }
 
 }

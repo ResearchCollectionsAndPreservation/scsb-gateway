@@ -11,6 +11,9 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 /**
  * Created by Anithav on 13/06/20.
  */
@@ -49,6 +52,6 @@ public class DeAccessionRestControllerUT extends BaseControllerUT{
         Mockito.when(deAccessionRestController.getRestTemplate().postForObject(getScsbCircUrl() + "/sharedCollection/deAccession", deAccessionRequest, Map.class)).thenReturn(responseEntity);
         Mockito.when(deAccessionRestController.deAccession(deAccessionRequest)).thenCallRealMethod();
         Map<String, String> ResponseEntity  = deAccessionRestController.deAccession(deAccessionRequest);
-      //  assertNull(ResponseEntity);
+        assertNotNull(ResponseEntity);
     }
 }

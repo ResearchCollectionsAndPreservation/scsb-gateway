@@ -8,6 +8,7 @@ import org.mockito.MockitoAnnotations;
 import org.recap.RecapCommonConstants;
 import org.recap.RecapConstants;
 import org.recap.controller.BaseControllerUT;
+import org.recap.model.AccessionModelRequest;
 import org.recap.model.AccessionRequest;
 import org.recap.model.BibItemAvailabityStatusRequest;
 import org.recap.model.ItemAvailabityStatusRequest;
@@ -21,6 +22,7 @@ import org.recap.model.transfer.Source;
 import org.recap.model.transfer.TransferRequest;
 import org.recap.model.transfer.TransferResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -42,6 +44,7 @@ import java.util.Random;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by chenchulakshmig on 14/10/16.
@@ -238,7 +241,7 @@ public class SharedCollectionRestControllerUT extends BaseControllerUT {
         ItemAvailabityStatusRequest itemAvailabityStatus = new ItemAvailabityStatusRequest();
         Mockito.when(sharedCollectionRestController.itemAvailabilityStatus(itemAvailabityStatus)).thenCallRealMethod();
         ResponseEntity responseEntity1 = sharedCollectionRestController.itemAvailabilityStatus(itemAvailabityStatus);
-        assertEquals(503,responseEntity1.getStatusCodeValue());
+        assertEquals(RecapCommonConstants.SCSB_SOLR_CLIENT_SERVICE_UNAVAILABLE,responseEntity1.getBody());
     }
 
     @Test
@@ -263,7 +266,7 @@ public class SharedCollectionRestControllerUT extends BaseControllerUT {
         BibItemAvailabityStatusRequest bibItemAvailabityStatusRequest = new BibItemAvailabityStatusRequest();
         Mockito.when(sharedCollectionRestController.bibAvailabilityStatus(bibItemAvailabityStatusRequest)).thenCallRealMethod();
         ResponseEntity responseEntity = sharedCollectionRestController.bibAvailabilityStatus(bibItemAvailabityStatusRequest);
-        assertEquals(503,responseEntity.getStatusCodeValue());
+        assertEquals(RecapCommonConstants.SCSB_SOLR_CLIENT_SERVICE_UNAVAILABLE,responseEntity.getBody());
     }
 
     @Test
@@ -300,7 +303,7 @@ public class SharedCollectionRestControllerUT extends BaseControllerUT {
         DeAccessionRequest deAccessionRequest = new DeAccessionRequest();
         Mockito.when(sharedCollectionRestController.deAccession(deAccessionRequest)).thenCallRealMethod();
         ResponseEntity responseEntity1 = sharedCollectionRestController.deAccession(deAccessionRequest);
-        assertEquals(503,responseEntity1.getStatusCodeValue());
+        assertEquals(RecapConstants.SCSB_CIRC_SERVICE_UNAVAILABLE,responseEntity1.getBody());
     }
 
     @Test
@@ -310,11 +313,13 @@ public class SharedCollectionRestControllerUT extends BaseControllerUT {
         accessionRequest.setCustomerCode("PB");
         accessionRequest.setItemBarcode("32101095533293");
         accessionRequestList.add(accessionRequest);
-        Mockito.when(mockRestTemplate.postForObject(getScsbCoreUrl() + "sharedCollection/accessionBatch",accessionRequestList, String.class)).thenReturn(RecapCommonConstants.SUCCESS);
+        AccessionModelRequest accessionModelRequest=new AccessionModelRequest();
+        accessionModelRequest.setAccessionRequests(accessionRequestList);
+        Mockito.when(mockRestTemplate.postForObject(getScsbCoreUrl() + "sharedCollection/accessionBatch",accessionModelRequest, String.class)).thenReturn(RecapCommonConstants.SUCCESS);
         Mockito.when(sharedCollectionRestController.getRestTemplate()).thenReturn(mockRestTemplate);
         Mockito.when(sharedCollectionRestController.getScsbCoreUrl()).thenReturn(scsbCoreUrl);
-        Mockito.when(sharedCollectionRestController.accessionBatch(accessionRequestList)).thenCallRealMethod();
-        ResponseEntity responseEntity = sharedCollectionRestController.accessionBatch(accessionRequestList);
+        Mockito.when(sharedCollectionRestController.accessionBatch(accessionModelRequest)).thenCallRealMethod();
+        ResponseEntity responseEntity = sharedCollectionRestController.accessionBatch(accessionModelRequest);
         assertNotNull(responseEntity);
         assertEquals(RecapCommonConstants.SUCCESS,responseEntity.getBody());
         assertNotNull(accessionRequest.getCustomerCode());
@@ -324,9 +329,11 @@ public class SharedCollectionRestControllerUT extends BaseControllerUT {
     @Test
     public void accessionBatch_Exception() throws Exception {
         List<AccessionRequest> accessionRequestList = new ArrayList<>();
-        Mockito.when(sharedCollectionRestController.accessionBatch(accessionRequestList)).thenCallRealMethod();
-        ResponseEntity responseEntity = sharedCollectionRestController.accessionBatch(accessionRequestList);
-        assertEquals(503,responseEntity.getStatusCodeValue());
+        AccessionModelRequest accessionModelRequest=new AccessionModelRequest();
+        accessionModelRequest.setAccessionRequests(accessionRequestList);
+        Mockito.when(sharedCollectionRestController.accessionBatch(accessionModelRequest)).thenCallRealMethod();
+        ResponseEntity responseEntity = sharedCollectionRestController.accessionBatch(accessionModelRequest);
+        assertEquals(RecapCommonConstants.SCSB_SOLR_CLIENT_SERVICE_UNAVAILABLE,responseEntity.getBody());
     }
 
     @Test
@@ -341,11 +348,13 @@ public class SharedCollectionRestControllerUT extends BaseControllerUT {
         linkedHashMap.put("itemBarcode","32101095533293");
         linkedHashMap.put("message","Success");
         linkedHashMapList.add(linkedHashMap);
-        Mockito.when(mockRestTemplate.postForObject(getScsbCoreUrl() + "sharedCollection/accession",accessionRequestList, List.class)).thenReturn(linkedHashMapList);
+        AccessionModelRequest accessionModelRequest=new AccessionModelRequest();
+        accessionModelRequest.setAccessionRequests(accessionRequestList);
+        Mockito.when(mockRestTemplate.postForObject(getScsbCoreUrl() + "sharedCollection/accession",accessionModelRequest, List.class)).thenReturn(linkedHashMapList);
         Mockito.when(sharedCollectionRestController.getRestTemplate()).thenReturn(mockRestTemplate);
         Mockito.when(sharedCollectionRestController.getScsbCoreUrl()).thenReturn(scsbCoreUrl);
-        Mockito.when(sharedCollectionRestController.accession(accessionRequestList)).thenCallRealMethod();
-        ResponseEntity responseEntity = sharedCollectionRestController.accession(accessionRequestList);
+        Mockito.when(sharedCollectionRestController.accession(accessionModelRequest)).thenCallRealMethod();
+        ResponseEntity responseEntity = sharedCollectionRestController.accession(accessionModelRequest);
         assertNotNull(responseEntity);
         assertEquals(linkedHashMapList,responseEntity.getBody());
         assertNotNull(accessionRequest.getCustomerCode());
@@ -364,11 +373,13 @@ public class SharedCollectionRestControllerUT extends BaseControllerUT {
         linkedHashMap.put("itemBarcode","32101095533293");
         linkedHashMap.put("message",RecapConstants.ONGOING_ACCESSION_LIMIT_EXCEED_MESSAGE);
         linkedHashMapList.add(linkedHashMap);
-        Mockito.when(mockRestTemplate.postForObject(getScsbCoreUrl() + "sharedCollection/accession",accessionRequestList, List.class)).thenReturn(linkedHashMapList);
+        AccessionModelRequest accessionModelRequest=new AccessionModelRequest();
+        accessionModelRequest.setAccessionRequests(accessionRequestList);
+        Mockito.when(mockRestTemplate.postForObject(getScsbCoreUrl() + "sharedCollection/accession",accessionModelRequest, List.class)).thenReturn(linkedHashMapList);
         Mockito.when(sharedCollectionRestController.getRestTemplate()).thenReturn(mockRestTemplate);
         Mockito.when(sharedCollectionRestController.getScsbCoreUrl()).thenReturn(scsbCoreUrl);
-        Mockito.when(sharedCollectionRestController.accession(accessionRequestList)).thenCallRealMethod();
-        ResponseEntity responseEntity = sharedCollectionRestController.accession(accessionRequestList);
+        Mockito.when(sharedCollectionRestController.accession(accessionModelRequest)).thenCallRealMethod();
+        ResponseEntity responseEntity = sharedCollectionRestController.accession(accessionModelRequest);
         assertNotNull(responseEntity);
         assertEquals(linkedHashMapList,responseEntity.getBody());
         assertNotNull(accessionRequest.getCustomerCode());
@@ -378,20 +389,24 @@ public class SharedCollectionRestControllerUT extends BaseControllerUT {
     @Test
     public void accession_ResourceAccessException() throws Exception {
         List<AccessionRequest> accessionRequestList = new ArrayList<>();
-        Mockito.when(mockRestTemplate.postForObject(getScsbCoreUrl() + "sharedCollection/accession",accessionRequestList, List.class)).thenThrow(new ResourceAccessException(RecapCommonConstants.SCSB_SOLR_CLIENT_SERVICE_UNAVAILABLE));
+        AccessionModelRequest accessionModelRequest=new AccessionModelRequest();
+        accessionModelRequest.setAccessionRequests(accessionRequestList);
+        Mockito.when(mockRestTemplate.postForObject(getScsbCoreUrl() + "sharedCollection/accession",accessionModelRequest, List.class)).thenThrow(new ResourceAccessException(RecapCommonConstants.SCSB_SOLR_CLIENT_SERVICE_UNAVAILABLE));
         Mockito.when(sharedCollectionRestController.getRestTemplate()).thenReturn(mockRestTemplate);
         Mockito.when(sharedCollectionRestController.getScsbCoreUrl()).thenReturn(scsbCoreUrl);
-        Mockito.when(sharedCollectionRestController.accession(accessionRequestList)).thenCallRealMethod();
-        ResponseEntity responseEntity = sharedCollectionRestController.accession(accessionRequestList);
-        assertEquals(503,responseEntity.getStatusCodeValue());
+        Mockito.when(sharedCollectionRestController.accession(accessionModelRequest)).thenCallRealMethod();
+        ResponseEntity responseEntity = sharedCollectionRestController.accession(accessionModelRequest);
+        assertEquals(HttpStatus.SERVICE_UNAVAILABLE,responseEntity.getStatusCode());
     }
 
     @Test
     public void accession_Exception() throws Exception {
         List<AccessionRequest> accessionRequestList = new ArrayList<>();
-        Mockito.when(sharedCollectionRestController.accession(accessionRequestList)).thenCallRealMethod();
-        ResponseEntity responseEntity = sharedCollectionRestController.accession(accessionRequestList);
-        assertEquals(503,responseEntity.getStatusCodeValue());
+        AccessionModelRequest accessionModelRequest=new AccessionModelRequest();
+        accessionModelRequest.setAccessionRequests(accessionRequestList);
+        Mockito.when(sharedCollectionRestController.accession(accessionModelRequest)).thenCallRealMethod();
+        ResponseEntity responseEntity = sharedCollectionRestController.accession(accessionModelRequest);
+        assertEquals(HttpStatus.SERVICE_UNAVAILABLE,responseEntity.getStatusCode());
     }
 
     @Test
@@ -412,8 +427,7 @@ public class SharedCollectionRestControllerUT extends BaseControllerUT {
         Mockito.when(sharedCollectionRestController.submitCollection(inputRecords,"PUL",false)).thenCallRealMethod();
         ResponseEntity responseEntity = sharedCollectionRestController.submitCollection(inputRecords,"PUL",false);
         assertNotNull(responseEntity);
-        assertEquals("[{itemBarcode=32101068878931, message=SuccessRecord}]",responseEntity.getBody().toString());
-
+        assertEquals(HttpStatus.OK,responseEntity.getStatusCode());
     }
     @Test
     public void submitCollection_Ifcheck() throws Exception {
@@ -428,20 +442,19 @@ public class SharedCollectionRestControllerUT extends BaseControllerUT {
 
         Mockito.when(sharedCollectionRestController.getRestTemplate()).thenReturn(mockRestTemplate);
         Mockito.when(sharedCollectionRestController.getScsbCoreUrl()).thenReturn(scsbCoreUrl);
-        Mockito.when(sharedCollectionRestController.getLinkedMultiValueMap()).thenReturn((LinkedMultiValueMap) requestParameter);
+        Mockito.when(sharedCollectionRestController.getLinkedMultiValueMap()).thenCallRealMethod();
         Mockito.when(mockRestTemplate.postForObject(getScsbCoreUrl() + "sharedCollection/submitCollection",requestParameter, List.class)).thenReturn(linkedHashMapList);
         Mockito.when(sharedCollectionRestController.submitCollection(inputRecords,"PUL",false)).thenCallRealMethod();
         ResponseEntity responseEntity = sharedCollectionRestController.submitCollection(inputRecords,"PUL",false);
         assertNotNull(responseEntity);
-        assertEquals("[{itemBarcode=32101068878931, message=Internal error occurred during submit collection}]",responseEntity.getBody().toString());
-
+        assertEquals(HttpStatus.BAD_REQUEST,responseEntity.getStatusCode());
     }
 
     @Test
     public void submitCollection_Exception() throws Exception {
         Mockito.when(sharedCollectionRestController.submitCollection(inputRecords,"PUL",false)).thenCallRealMethod();
         ResponseEntity responseEntity = sharedCollectionRestController.submitCollection(inputRecords,"PUL",false);
-        assertEquals(503,responseEntity.getStatusCodeValue());
+        assertEquals(HttpStatus.SERVICE_UNAVAILABLE,responseEntity.getStatusCode());
     }
 
     @Test
@@ -450,7 +463,6 @@ public class SharedCollectionRestControllerUT extends BaseControllerUT {
         transferRequest.setInstitution("PUL");
         HoldingsTransferRequest holdingsTransferRequestArrayList = new HoldingsTransferRequest();
         Source source = new Source();
-        ItemSource ItemSource = new ItemSource();
         source.setOwningInstitutionBibId("53624");
         source.setOwningInstitutionHoldingsId("59753");
         holdingsTransferRequestArrayList.setSource(source);
@@ -469,14 +481,13 @@ public class SharedCollectionRestControllerUT extends BaseControllerUT {
         List<HoldingTransferResponse> holdingTransferResponse = new ArrayList<>();
         holdingTransferResponse.add(holdingsTransferResponseArrayList);
         transferResponse.setHoldingTransferResponses(holdingTransferResponse);
-        ResponseEntity<TransferResponse> responseEntity =Mockito.mock(ResponseEntity.class);
         Mockito.when(sharedCollectionRestController.getRestTemplate()).thenReturn(mockRestTemplate);
         Mockito.when(sharedCollectionRestController.getScsbSolrClientUrl()).thenReturn(scsbSolrClientUrl);
         Mockito.when(mockRestTemplate.postForObject(getScsbSolrClientUrl() + "transfer/processTransfer", transferRequest, TransferResponse.class)).thenReturn(transferResponse);
         Mockito.when(sharedCollectionRestController.transferHoldingsAndItems(transferRequest)).thenCallRealMethod();
         ResponseEntity responseEntity1= sharedCollectionRestController.transferHoldingsAndItems(transferRequest);
         assertNotNull(responseEntity1);
-        assertEquals(200,responseEntity1.getStatusCodeValue());
+        assertEquals(HttpStatus.OK,responseEntity1.getStatusCode());
     }
 
     @Test
@@ -485,7 +496,6 @@ public class SharedCollectionRestControllerUT extends BaseControllerUT {
         transferRequest.setInstitution("PUL");
         HoldingsTransferRequest holdingsTransferRequestArrayList = new HoldingsTransferRequest();
         Source source = new Source();
-        ItemSource ItemSource = new ItemSource();
         source.setOwningInstitutionBibId("53624");
         source.setOwningInstitutionHoldingsId("59753");
         holdingsTransferRequestArrayList.setSource(source);
@@ -496,18 +506,16 @@ public class SharedCollectionRestControllerUT extends BaseControllerUT {
         List<HoldingsTransferRequest> HoldingsTransferRequest1 = new ArrayList<>();
         HoldingsTransferRequest1.add(holdingsTransferRequestArrayList);
         transferRequest.setHoldingTransfers(HoldingsTransferRequest1);
-        ResponseEntity<TransferResponse> responseEntity =Mockito.mock(ResponseEntity.class);
         Mockito.when(sharedCollectionRestController.getRestTemplate()).thenReturn(mockRestTemplate);
         Mockito.when(sharedCollectionRestController.getScsbSolrClientUrl()).thenReturn(scsbSolrClientUrl);
         Mockito.when(mockRestTemplate.postForObject(getScsbSolrClientUrl() + "transfer/processTransfer", transferRequest, TransferResponse.class)).thenThrow(new RestClientException(""));
         Mockito.when(sharedCollectionRestController.transferHoldingsAndItems(transferRequest)).thenCallRealMethod();
         ResponseEntity responseEntity1= sharedCollectionRestController.transferHoldingsAndItems(transferRequest);
-        assertEquals(503,responseEntity1.getStatusCodeValue());
+        assertEquals(HttpStatus.SERVICE_UNAVAILABLE,responseEntity1.getStatusCode());
     }
 
     @Test
     public void checkGetterServices(){
-        LinkedHashMap linkedHashMap = new LinkedHashMap();
         Mockito.when(sharedCollectionRestController.getRestTemplate()).thenCallRealMethod();
         Mockito.when(sharedCollectionRestController.getScsbSolrClientUrl()).thenCallRealMethod();
         Mockito.when(sharedCollectionRestController.getScsbCircUrl()).thenCallRealMethod();
