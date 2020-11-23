@@ -88,6 +88,9 @@ public class SearchResultRowUT extends BaseTestCase{
         searchItemResultRow.setAvailability("Available");
         searchItemResultRow.setSelectedItem(true);
         searchItemResultRow.setItemId(1);
+        SearchItemResultRow searchItemResultRow1 =searchItemResultRow;
+        searchItemResultRow.compareTo(searchItemResultRow1);
+        searchItemResultRow.compareTo(new SearchItemResultRow());
         return searchItemResultRow;
     }
 

@@ -58,6 +58,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -130,41 +131,41 @@ public class RequestItemRestControllerUT extends BaseTestCase{
         itemRequestInformation.setDeliveryLocation("PB");
         itemRequestInformation.setStartPage("I");
         itemRequestInformation.setEndPage("XII");
-
+        assertFalse(itemRequestInformation.isOwningInstitutionItem());
         Mockito.when(mockRestTemplate.postForEntity(getScsbCircUrl() + "requestItem/validateItemRequestInformations", itemRequestInformation, String.class)).thenReturn(responseEntity);
         Mockito.when(requestItemRestController.getRestTemplate()).thenReturn(mockRestTemplate);
         Mockito.when(requestItemRestController.getScsbCircUrl()).thenReturn(scsbCircUrl);
         Mockito.when(requestItemRestController.validateItemRequest(itemRequestInformation)).thenCallRealMethod();
         ResponseEntity responseEntity1 = requestItemRestController.validateItemRequest(itemRequestInformation);
         assertNotNull(responseEntity1);
-        assertEquals(RecapCommonConstants.VALID_REQUEST,responseEntity.getBody());
+        assertEquals(RecapCommonConstants.VALID_REQUEST,responseEntity1.getBody());
     }
     @Test
     public void testValidRequest_HttpClientErrorException() throws JSONException {
-        ResponseEntity responseEntity = new ResponseEntity(RecapCommonConstants.VALID_REQUEST, HttpStatus.OK);
         ItemRequestInformation itemRequestInformation = new ItemRequestInformation();
         itemRequestInformation.setItemBarcodes(Arrays.asList("32101047717911"));
         itemRequestInformation.setTitleIdentifier("105 paintings in the John Herron Art Museum.");
         itemRequestInformation.setItemOwningInstitution("PUL");
         itemRequestInformation.setRequestType("EDD");
-        itemRequestInformation.setRequestingInstitution("CUL");
+        itemRequestInformation.setRequestingInstitution("PUL");
         itemRequestInformation.setEmailAddress("hemalatha.s@htcindia.com");
         itemRequestInformation.setPatronBarcode("45678915");
         itemRequestInformation.setDeliveryLocation("PB");
         itemRequestInformation.setStartPage("I");
         itemRequestInformation.setEndPage("XII");
-
+        assertTrue(itemRequestInformation.isOwningInstitutionItem());
         Mockito.when(mockRestTemplate.postForEntity(getScsbCircUrl() + "requestItem/validateItemRequestInformations", itemRequestInformation, String.class)).thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST));
         Mockito.when(requestItemRestController.getRestTemplate()).thenReturn(mockRestTemplate);
         Mockito.when(requestItemRestController.getScsbCircUrl()).thenReturn(scsbCircUrl);
         Mockito.when(requestItemRestController.validateItemRequest(itemRequestInformation)).thenCallRealMethod();
         Mockito.when(requestItemRestController.getLogger()).thenReturn(mocklogger);
         ResponseEntity responseEntity1 = requestItemRestController.validateItemRequest(itemRequestInformation);
+        assertNotNull(responseEntity1);
+        assertEquals(HttpStatus.BAD_REQUEST,responseEntity1.getStatusCode());
    }
 
     @Test
     public void testValidRequest_RestClientException() throws JSONException {
-        ResponseEntity responseEntity = new ResponseEntity(RecapCommonConstants.VALID_REQUEST, HttpStatus.OK);
         ItemRequestInformation itemRequestInformation = new ItemRequestInformation();
         itemRequestInformation.setItemBarcodes(Arrays.asList("32101047717911"));
         itemRequestInformation.setTitleIdentifier("105 paintings in the John Herron Art Museum.");
@@ -183,6 +184,9 @@ public class RequestItemRestControllerUT extends BaseTestCase{
         Mockito.when(requestItemRestController.validateItemRequest(itemRequestInformation)).thenCallRealMethod();
         Mockito.when(requestItemRestController.getLogger()).thenReturn(mocklogger);
         ResponseEntity responseEntity1 = requestItemRestController.validateItemRequest(itemRequestInformation);
+        assertNotNull(responseEntity1);
+        assertEquals("Scsb circ Service is Unavailable.",responseEntity1.getBody());
+
     }
 
     @Test
@@ -194,15 +198,13 @@ public class RequestItemRestControllerUT extends BaseTestCase{
         itemRequestInformation.setItemOwningInstitution("CUL");
         itemRequestInformation.setRequestingInstitution("PULd");
         itemRequestInformation.setEmailAddress("hemalatha.s@htcindia.com");
-
-
         Mockito.when(mockRestTemplate.postForEntity(getScsbCircUrl() + "requestItem/validateItemRequestInformations", itemRequestInformation, String.class)).thenReturn(responseEntity);
         Mockito.when(requestItemRestController.getRestTemplate()).thenReturn(mockRestTemplate);
         Mockito.when(requestItemRestController.getScsbCircUrl()).thenReturn(scsbCircUrl);
         Mockito.when(requestItemRestController.validateItemRequest(itemRequestInformation)).thenCallRealMethod();
         ResponseEntity responseEntity1 = requestItemRestController.validateItemRequest(itemRequestInformation);
         assertNotNull(responseEntity1);
-        assertEquals(responseEntity.getBody(), RecapConstants.INVALID_REQUEST_INSTITUTION+"\n");
+        assertEquals( RecapConstants.INVALID_REQUEST_INSTITUTION+"\n",responseEntity1.getBody());
     }
 
     @Test
@@ -220,7 +222,7 @@ public class RequestItemRestControllerUT extends BaseTestCase{
         Mockito.when(requestItemRestController.validateItemRequest(itemRequestInformation)).thenCallRealMethod();
         ResponseEntity responseEntity1 = requestItemRestController.validateItemRequest(itemRequestInformation);
         assertNotNull(responseEntity1);
-        assertEquals("Patron barcode not found",responseEntity.getBody());
+        assertEquals("Patron barcode not found",responseEntity1.getBody());
     }
 
     @Test
@@ -238,7 +240,7 @@ public class RequestItemRestControllerUT extends BaseTestCase{
         Mockito.when(requestItemRestController.validateItemRequest(itemRequestInformation)).thenCallRealMethod();
         ResponseEntity responseEntity1 = requestItemRestController.validateItemRequest(itemRequestInformation);
         assertNotNull(responseEntity1);
-        assertEquals(responseEntity.getBody(), RecapConstants.START_PAGE_AND_END_PAGE_REQUIRED+"\n");
+        assertEquals( RecapConstants.START_PAGE_AND_END_PAGE_REQUIRED+"\n",responseEntity1.getBody());
     }
 
     @Test
@@ -392,6 +394,7 @@ public class RequestItemRestControllerUT extends BaseTestCase{
         Mockito.when(requestItemRestController.checkinItemRequest(itemCheckInRequest)).thenCallRealMethod();
         Mockito.when(requestItemRestController.getLogger()).thenReturn(mocklogger);
         AbstractResponseItem abstractResponseItem = requestItemRestController.checkinItemRequest(itemCheckInRequest);
+        assertNull(abstractResponseItem);
      }
 
     @Test
@@ -418,6 +421,7 @@ public class RequestItemRestControllerUT extends BaseTestCase{
         Mockito.when(requestItemRestController.checkinItemRequest(itemCheckInRequest)).thenCallRealMethod();
         Mockito.when(requestItemRestController.getLogger()).thenReturn(mocklogger);
         AbstractResponseItem abstractResponseItem = requestItemRestController.checkinItemRequest(itemCheckInRequest);
+        assertNull(abstractResponseItem);
     }
 
     @Test
@@ -652,7 +656,7 @@ public class RequestItemRestControllerUT extends BaseTestCase{
 
         Mockito.when(requestItemRestController.getRestTemplate()).thenReturn(mockRestTemplate);
         Mockito.when(requestItemRestController.getScsbCircUrl()).thenReturn(scsbCircUrl);
-        Mockito.when(requestItemRestController.getItemRequestInformation()).thenReturn(itemRequestInfo);
+        Mockito.when(requestItemRestController.getItemRequestInformation()).thenCallRealMethod();
         Mockito.when(requestItemRestController.getObjectMapper()).thenReturn(objectMapper);
         Mockito.when(requestItemRestController.getObjectMapper().readValue(response, ItemCheckoutResponse.class)).thenReturn(getItemCheckoutResponse());
         Mockito.when(mockRestTemplate.postForEntity(getScsbCircUrl() + "requestItem/checkoutItem", itemRequestInfo, String.class)).thenReturn(responseEntity);
@@ -681,13 +685,13 @@ public class RequestItemRestControllerUT extends BaseTestCase{
         Mockito.when(requestItemRestController.getScsbCircUrl()).thenReturn(scsbCircUrl);
         Mockito.when(requestItemRestController.getItemRequestInformation()).thenReturn(itemRequestInfo);
         Mockito.when(requestItemRestController.getObjectMapper()).thenReturn(objectMapper);
-        Mockito.when(requestItemRestController.getObjectMapper().readValue(response, ItemCheckoutResponse.class)).thenThrow(new RestClientException("Exception occured"));
+        Mockito.when(requestItemRestController.getObjectMapper().readValue(response, ItemCheckoutResponse.class)).thenThrow(new RestClientException(RecapCommonConstants.REQUEST_EXCEPTION_REST));
         Mockito.when(mockRestTemplate.postForEntity(getScsbCircUrl() + "requestItem/checkoutItem", itemRequestInfo, String.class)).thenReturn(responseEntity);
         Mockito.when(requestItemRestController.getLogger()).thenReturn(mocklogger);
         Mockito.when(requestItemRestController.checkoutItemRequest(itemCheckOutRequest)).thenCallRealMethod();
         ItemCheckoutResponse itemCheckoutResponse = requestItemRestController.checkoutItemRequest(itemCheckOutRequest);
         assertNotNull(itemCheckoutResponse);
-        assertEquals("Exception occured",itemCheckoutResponse.getScreenMessage());
+        assertEquals(RecapCommonConstants.REQUEST_EXCEPTION_REST,itemCheckoutResponse.getScreenMessage());
     }
     @Test
     public void testCheckoutItemRequest_Exception() throws IOException {
@@ -1152,20 +1156,6 @@ public class RequestItemRestControllerUT extends BaseTestCase{
         }
     }
 
-
-    @Test
-    public void testQueue() {
-        String testString ="Test";
-        String body="";
-        String endpointUri="scsbactivemq:queue:Request.Item";
-        try {
-            producer.sendBody(endpointUri, testString);
-            logger.info("Start");
-        }catch(Exception e){
-            logger.error(e.toString());
-        }
-    }
-
     @Test
     public void testTopic() {
         String testString ="Test";
@@ -1196,31 +1186,6 @@ public class RequestItemRestControllerUT extends BaseTestCase{
 
         }
         assertNotEquals(testString, body);
-    }
-
-    @Test
-    public void testQueuewithObject() {
-        logger.info("Send Item Request ");
-        try {
-            ItemRequestInformation itemRequestInformation=new ItemRequestInformation();
-            itemRequestInformation.setItemBarcodes(Arrays.asList("PULTST54321"));
-            itemRequestInformation.setPatronBarcode("45678913");
-             itemRequestInformation.setRequestType(RecapCommonConstants.REQUEST_TYPE_RETRIEVAL);
-            itemRequestInformation.setRequestingInstitution(RecapCommonConstants.PRINCETON);
-            itemRequestInformation.setEmailAddress("ksudhish@gmail.com");
-            itemRequestInformation.setDeliveryLocation("htcsc");
-            itemRequestInformation.setTitleIdentifier("New BooK");
-
-            String json = "";
-            ObjectMapper objectMapper= new ObjectMapper();
-            json = objectMapper.writeValueAsString(itemRequestInformation);
-
-            producer.sendBodyAndHeader(RecapConstants.REQUEST_ITEM_QUEUE, json, RecapCommonConstants.REQUEST_TYPE_QUEUE_HEADER, itemRequestInformation.getRequestType());
-        } catch (JsonProcessingException e) {
-                logger.error(e.getMessage());
-        }catch(Exception e){
-            logger.error(e.getMessage());
-        }
     }
 
     private ItemCheckinResponse getItemCheckInResponse(){

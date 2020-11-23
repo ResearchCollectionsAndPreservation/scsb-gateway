@@ -27,6 +27,7 @@ public class HoldingTransferResponseUT extends BaseTestCase {
         holdingTransferResponse.setHoldingsTransferRequest(holdingsTransferRequest);
         assertNotNull(holdingTransferResponse.getMessage());
         assertNotNull(holdingTransferResponse.getHoldingsTransferRequest());
-    }
+
+     }
 
 }
