@@ -22,11 +22,11 @@ public class ReportsResponseUT extends BaseTestCase {
         ReportsInstitutionForm reportsInstitutionForm = new ReportsInstitutionForm();
         reportsInstitutionForm.setInstitution("PUL");
         reportsInstitutionForm.setAccessionPrivateCount(1);
-        reportsInstitutionForm.setAccessionPrivateCount(1);
-        reportsInstitutionForm.setAccessionPrivateCount(1);
+        reportsInstitutionForm.setAccessionSharedCount(1);
+        reportsInstitutionForm.setAccessionOpenCount(1);
         reportsInstitutionForm.setDeaccessionPrivateCount(1);
-        reportsInstitutionForm.setDeaccessionPrivateCount(1);
-        reportsInstitutionForm.setDeaccessionPrivateCount(1);
+        reportsInstitutionForm.setDeaccessionSharedCount(1);
+        reportsInstitutionForm.setDeaccessionOpenCount(1);
         reportsInstitutionForm.setOpenCgdCount(1);
         reportsInstitutionForm.setSharedCgdCount(1);
         reportsInstitutionForm.setPrivateCgdCount(1);
