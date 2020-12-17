@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -59,11 +59,11 @@ public class SharedCollectionRestController extends AbstractController {
     public RestTemplate getRestTemplate() {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters()
-                .add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
+                .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
         return restTemplate;
     }
 
-    public LinkedMultiValueMap getLinkedMultiValueMap(){
+    public LinkedMultiValueMap<String, Object> getLinkedMultiValueMap(){
         return new LinkedMultiValueMap<>();
     }
 
@@ -84,12 +84,12 @@ public class SharedCollectionRestController extends AbstractController {
             response = getRestTemplate().postForObject(getScsbSolrClientUrl() + "/sharedCollection/itemAvailabilityStatus", itemAvailabityStatus, String.class);
         } catch (Exception exception) {
             logger.error(RecapCommonConstants.LOG_ERROR, exception);
-            return new ResponseEntity(RecapCommonConstants.SCSB_SOLR_CLIENT_SERVICE_UNAVAILABLE, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
+            return new ResponseEntity<>(RecapCommonConstants.SCSB_SOLR_CLIENT_SERVICE_UNAVAILABLE, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
         }
         if (StringUtils.isEmpty(response)) {
-            return new ResponseEntity(RecapCommonConstants.ITEM_BARCDE_DOESNOT_EXIST, getHttpHeaders(), HttpStatus.OK);
+            return new ResponseEntity<>(RecapCommonConstants.ITEM_BARCDE_DOESNOT_EXIST, getHttpHeaders(), HttpStatus.OK);
         } else {
-            return new ResponseEntity(response, getHttpHeaders(), HttpStatus.OK);
+            return new ResponseEntity<>(response, getHttpHeaders(), HttpStatus.OK);
         }
     }
 
@@ -110,9 +110,9 @@ public class SharedCollectionRestController extends AbstractController {
             response = getRestTemplate().postForObject(getScsbSolrClientUrl() + "/sharedCollection/bibAvailabilityStatus", bibItemAvailabityStatusRequest, String.class);
         } catch (Exception exception) {
             logger.error(RecapCommonConstants.LOG_ERROR, exception);
-            return new ResponseEntity(RecapCommonConstants.SCSB_SOLR_CLIENT_SERVICE_UNAVAILABLE, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
+            return new ResponseEntity<>(RecapCommonConstants.SCSB_SOLR_CLIENT_SERVICE_UNAVAILABLE, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
         }
-        return new ResponseEntity(response, getHttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(response, getHttpHeaders(), HttpStatus.OK);
     }
 
     /**
@@ -129,10 +129,10 @@ public class SharedCollectionRestController extends AbstractController {
     public ResponseEntity deAccession(@ApiParam(value = "Provide item barcodes to be deaccessioned, separated by comma", required = true, name = "itemBarcodes") @RequestBody DeAccessionRequest deAccessionRequest) {
         try {
             Map<String, String> resultMap = getRestTemplate().postForObject(getScsbCircUrl() + "/sharedCollection/deAccession", deAccessionRequest, Map.class);
-            return new ResponseEntity(resultMap, getHttpHeaders(), HttpStatus.OK);
+            return new ResponseEntity<>(resultMap, getHttpHeaders(), HttpStatus.OK);
         } catch (Exception ex) {
             logger.error(RecapCommonConstants.LOG_ERROR, ex);
-            return new ResponseEntity(RecapConstants.SCSB_CIRC_SERVICE_UNAVAILABLE, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
+            return new ResponseEntity<>(RecapConstants.SCSB_CIRC_SERVICE_UNAVAILABLE, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 
@@ -150,13 +150,13 @@ public class SharedCollectionRestController extends AbstractController {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
             String responseMessage = getRestTemplate().postForObject(getScsbCoreUrl() + "sharedCollection/accessionBatch", accessionModelRequest, String.class);
-            ResponseEntity responseEntity = new ResponseEntity(responseMessage, getHttpHeaders(), HttpStatus.OK);
+            ResponseEntity responseEntity = new ResponseEntity<>(responseMessage, getHttpHeaders(), HttpStatus.OK);
             stopWatch.stop();
             logger.info("Total time taken for saving accession request-->{}sec", stopWatch.getTotalTimeSeconds());
             return responseEntity;
         } catch (Exception exception) {
             logger.error(RecapCommonConstants.LOG_ERROR, exception);
-            return new ResponseEntity(RecapCommonConstants.SCSB_SOLR_CLIENT_SERVICE_UNAVAILABLE, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
+            return new ResponseEntity<>(RecapCommonConstants.SCSB_SOLR_CLIENT_SERVICE_UNAVAILABLE, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 
@@ -177,9 +177,9 @@ public class SharedCollectionRestController extends AbstractController {
             ResponseEntity responseEntity;
             List<LinkedHashMap> linkedHashMapList = getRestTemplate().postForObject(getScsbCoreUrl() + "sharedCollection/accession", accessionModelRequest, List.class);
             if (null != linkedHashMapList && linkedHashMapList.get(0).get("message").toString().contains(RecapConstants.ONGOING_ACCESSION_LIMIT_EXCEED_MESSAGE)) {
-                responseEntity = new ResponseEntity(linkedHashMapList, getHttpHeaders(), HttpStatus.BAD_REQUEST);
+                responseEntity = new ResponseEntity<>(linkedHashMapList, getHttpHeaders(), HttpStatus.BAD_REQUEST);
             } else {
-                responseEntity = new ResponseEntity(linkedHashMapList, getHttpHeaders(), HttpStatus.OK);
+                responseEntity = new ResponseEntity<>(linkedHashMapList, getHttpHeaders(), HttpStatus.OK);
             }
             stopWatch.stop();
             logger.info("Total time taken for accession-->{}sec",stopWatch.getTotalTimeSeconds());
@@ -190,14 +190,14 @@ public class SharedCollectionRestController extends AbstractController {
             AccessionResponse accessionResponse=new AccessionResponse();
             accessionResponse.setMessage(RecapCommonConstants.SCSB_SOLR_CLIENT_SERVICE_UNAVAILABLE);
             accessionResponseList.add(accessionResponse);
-            return new ResponseEntity(accessionResponseList, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
+            return new ResponseEntity<>(accessionResponseList, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
         } catch (Exception exception) {
             logger.error(RecapCommonConstants.LOG_ERROR, exception);
             List<AccessionResponse> accessionResponseList = new ArrayList<>();
             AccessionResponse accessionResponse=new AccessionResponse();
             accessionResponse.setMessage(RecapConstants.ACCESSION_INTERNAL_ERROR);
             accessionResponseList.add(accessionResponse);
-            return new ResponseEntity(accessionResponseList, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
+            return new ResponseEntity<>(accessionResponseList, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 
@@ -224,14 +224,14 @@ public class SharedCollectionRestController extends AbstractController {
             String message = linkedHashMapList != null ? linkedHashMapList.get(0).get("message").toString(): RecapConstants.SUBMIT_COLLECTION_INTERNAL_ERROR;
             if (message.equalsIgnoreCase(RecapConstants.INVALID_MARC_XML_FORMAT_MESSAGE) || message.equalsIgnoreCase(RecapConstants.INVALID_SCSB_XML_FORMAT_MESSAGE)
                     || message.equalsIgnoreCase(RecapConstants.SUBMIT_COLLECTION_INTERNAL_ERROR)) {
-                responseEntity = new ResponseEntity(linkedHashMapList, getHttpHeaders(), HttpStatus.BAD_REQUEST);
+                responseEntity = new ResponseEntity<>(linkedHashMapList, getHttpHeaders(), HttpStatus.BAD_REQUEST);
             } else {
-                responseEntity = new ResponseEntity(linkedHashMapList, getHttpHeaders(), HttpStatus.OK);
+                responseEntity = new ResponseEntity<>(linkedHashMapList, getHttpHeaders(), HttpStatus.OK);
             }
             return responseEntity;
         } catch (Exception exception) {
             logger.error(RecapCommonConstants.LOG_ERROR, exception);
-            responseEntity = new ResponseEntity(RecapConstants.SUBMIT_COLLECTION_INTERNAL_ERROR, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
+            responseEntity = new ResponseEntity<>(RecapConstants.SUBMIT_COLLECTION_INTERNAL_ERROR, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
             return responseEntity;
         }
     }
@@ -253,10 +253,10 @@ public class SharedCollectionRestController extends AbstractController {
         ResponseEntity responseEntity;
         try {
             TransferResponse transferResponse = getRestTemplate().postForObject(getScsbSolrClientUrl() + "transfer/processTransfer", transferRequest, TransferResponse.class);
-            responseEntity = new ResponseEntity(transferResponse, getHttpHeaders(), HttpStatus.OK);
+            responseEntity = new ResponseEntity<>(transferResponse, getHttpHeaders(), HttpStatus.OK);
         } catch (Exception exception) {
             logger.error(RecapCommonConstants.LOG_ERROR, exception);
-            responseEntity = new ResponseEntity(RecapConstants.TRANSFER_INTERNAL_ERROR, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
+            responseEntity = new ResponseEntity<>(RecapConstants.TRANSFER_INTERNAL_ERROR, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
         }
         return responseEntity;
     }

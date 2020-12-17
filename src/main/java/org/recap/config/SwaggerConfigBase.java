@@ -17,11 +17,11 @@ import springfox.documentation.spring.web.plugins.Docket;
  */
 abstract class SwaggerConfigBase implements WebMvcConfigurer {
 
-    protected static String ERROR_INFORMATION_CLASS = "ErrorInfo";
-    protected static String INTERNAL_SERVER_ERROR_MESSAGE = "Internal Server Error";
-    protected static String GONE_ERROR_MESSAGE = "Gone";
-    protected static String NOT_FOUND_ERROR_MESSAGE = "Not Found";
-    protected static String BAD_REQUEST_ERROR_MESSAGE = "Bad Request";
+    protected static final String ERROR_INFORMATION_CLASS = "ErrorInfo";
+    protected static final String INTERNAL_SERVER_ERROR_MESSAGE = "Internal Server Error";
+    protected static final String GONE_ERROR_MESSAGE = "Gone";
+    protected static final String NOT_FOUND_ERROR_MESSAGE = "Not Found";
+    protected static final String BAD_REQUEST_ERROR_MESSAGE = "Bad Request";
 
     private final ResponseMessage INTERNAL_SERVER_ERROR_RESPONSE_MESSAGE = setResponseMessage(HttpStatus.INTERNAL_SERVER_ERROR.value(), INTERNAL_SERVER_ERROR_MESSAGE);
 
@@ -31,11 +31,10 @@ abstract class SwaggerConfigBase implements WebMvcConfigurer {
 
     private final ResponseMessage BAD_REQUEST_RESPONSE_MESSAGE = setResponseMessage(HttpStatus.BAD_REQUEST.value(), BAD_REQUEST_ERROR_MESSAGE);
 
-/*
-    private final List<ResponseMessage> RESPONSE_MESSAGE_LIST =
-            newArrayList(INTERNAL_SERVER_ERROR_RESPONSE_MESSAGE, GONE_ERROR_RESPONSE_MESSAGE, NOT_FOUND_RESPONSE_MESSAGE,
-                    BAD_REQUEST_RESPONSE_MESSAGE);
-*/
+
+    public static String getBadRequestErrorMessage() {
+        return BAD_REQUEST_ERROR_MESSAGE;
+    }
 
     @Autowired
     private TypeResolver typeResolver;

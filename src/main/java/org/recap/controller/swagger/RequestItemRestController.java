@@ -129,7 +129,7 @@ public class RequestItemRestController extends AbstractController  {
     @ResponseBody
     public ItemResponseInformation itemRequest(@ApiParam(value = "Parameters to place a request on an Item", required = true, name = "requestItemJson") @RequestBody ItemRequestInformation itemRequestInfo) {
         ItemResponseInformation itemResponseInformation = new ItemResponseInformation();
-        List itemBarcodes;
+        List<String> itemBarcodes;
         HttpStatus statusCode;
         boolean bSuccess;
         String screenMessage;
@@ -153,7 +153,7 @@ public class RequestItemRestController extends AbstractController  {
                 itemRequestInfo.setItemBarcodes(null);
                 itemRequestInfo.setRequestNotes(StringUtils.left(itemRequestInfo.getRequestNotes(),1000));
                 for (int i = 0; i < itemBarcodes.size(); i++) {
-                    itemRequestInfo.setItemBarcodes(Arrays.asList(itemBarcodes.get(i).toString().trim()));
+                    itemRequestInfo.setItemBarcodes(Arrays.asList(itemBarcodes.get(i).trim()));
                     String json = objectMapper.writeValueAsString(itemRequestInfo);
                     getProducer().sendBodyAndHeader(RecapConstants.REQUEST_ITEM_QUEUE, json, RecapCommonConstants.REQUEST_TYPE_QUEUE_HEADER, itemRequestInfo.getRequestType());
                 }
@@ -199,14 +199,14 @@ public class RequestItemRestController extends AbstractController  {
             logger.error("error-->", httpEx);
             HttpStatus statusCode = httpEx.getStatusCode();
             String responseBodyAsString = httpEx.getResponseBodyAsString();
-            return new ResponseEntity(responseBodyAsString, getHttpHeaders(), statusCode);
+            return new ResponseEntity<>(responseBodyAsString, getHttpHeaders(), statusCode);
         } catch (Exception ex) {
             logger.error("scsbCircUrl", ex);
-            logger.debug("scsbCircUrl : " + getScsbCircUrl());
-            responseEntity = new ResponseEntity("Scsb circ Service is Unavailable.", getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
+            logger.debug("scsbCircUrl : ".concat(getScsbCircUrl()));
+            responseEntity = new ResponseEntity<>("Scsb circ Service is Unavailable.", getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
             return responseEntity;
         }
-        responseEntity = new ResponseEntity(response, getHttpHeaders(), HttpStatus.OK);
+        responseEntity = new ResponseEntity<>(response, getHttpHeaders(), HttpStatus.OK);
         return responseEntity;
     }
 
@@ -307,11 +307,11 @@ public class RequestItemRestController extends AbstractController  {
             itemHoldResponse = om.readValue(response, ItemHoldResponse.class);
         } catch (RestClientException ex) {
             logger.error(RecapCommonConstants.REQUEST_EXCEPTION_REST, ex);
-            logger.error(RecapCommonConstants.REQUEST_EXCEPTION_REST + ex.getMessage());
+            logger.error(String.format(RecapCommonConstants.REQUEST_EXCEPTION_REST +"%s", ex.getMessage()));
             itemHoldResponse.setScreenMessage(ex.getMessage());
         } catch (Exception ex) {
             logger.error(RecapCommonConstants.REQUEST_EXCEPTION, ex);
-            logger.error(RecapCommonConstants.REQUEST_EXCEPTION + ex.getMessage());
+            logger.error(String.format(RecapCommonConstants.REQUEST_EXCEPTION +"%s", ex.getMessage()));
             itemHoldResponse.setScreenMessage(ex.getMessage());
         }
         return itemHoldResponse;
@@ -346,12 +346,12 @@ public class RequestItemRestController extends AbstractController  {
             itemHoldResponse = om.readValue(response, ItemHoldResponse.class);
         } catch (RestClientException ex) {
             getLogger().error(RecapCommonConstants.REQUEST_EXCEPTION_REST, ex);
-            getLogger().error(RecapCommonConstants.REQUEST_EXCEPTION_REST + ex.getMessage());
+            getLogger().error(String.format(RecapCommonConstants.REQUEST_EXCEPTION_REST +"%s", ex.getMessage()));
             itemHoldResponse =new ItemHoldResponse();
             itemHoldResponse.setScreenMessage(ex.getMessage());
         } catch (Exception ex) {
             getLogger().error(RecapCommonConstants.REQUEST_EXCEPTION, ex);
-            getLogger().error(RecapCommonConstants.REQUEST_EXCEPTION + ex.getMessage());
+            getLogger().error(String.format(RecapCommonConstants.REQUEST_EXCEPTION +"%s", ex.getMessage()));
             itemHoldResponse = new ItemHoldResponse();
             itemHoldResponse.setScreenMessage(ex.getMessage());
         }
@@ -385,11 +385,11 @@ public class RequestItemRestController extends AbstractController  {
             itemCreateBibResponse = om.readValue(response, ItemCreateBibResponse.class);
         } catch (RestClientException ex) {
             getLogger().error(RecapCommonConstants.REQUEST_EXCEPTION_REST, ex);
-            getLogger().error(RecapCommonConstants.REQUEST_EXCEPTION_REST + ex.getMessage());
+            getLogger().error(String.format(RecapCommonConstants.REQUEST_EXCEPTION_REST +"%s", ex.getMessage()));
             itemCreateBibResponse.setScreenMessage(ex.getMessage());
         } catch (Exception ex) {
             getLogger().error(RecapCommonConstants.REQUEST_EXCEPTION, ex);
-            getLogger().error(RecapCommonConstants.REQUEST_EXCEPTION + ex.getMessage());
+            getLogger().error(String.format(RecapCommonConstants.REQUEST_EXCEPTION +"%s", ex.getMessage()));
             itemCreateBibResponse.setScreenMessage(ex.getMessage());
         }
         return itemCreateBibResponse;
@@ -412,7 +412,7 @@ public class RequestItemRestController extends AbstractController  {
         try {
             itemInformationRequest.setItemBarcodes(itemRequestInfo.getItemBarcodes());
             itemInformationRequest.setItemOwningInstitution(itemRequestInfo.getItemOwningInstitution());
-            HttpEntity request = new HttpEntity(itemInformationRequest);
+            HttpEntity request = new HttpEntity<>(itemInformationRequest);
             responseEntity = getRestTemplate().exchange(getScsbCircUrl() + RecapConstants.URL_REQUEST_ITEM_INFORMATION, org.springframework.http.HttpMethod.POST, request, ItemInformationResponse.class);
             itemInformationResponse = responseEntity.getBody();
         } catch (RestClientException ex) {
@@ -454,11 +454,11 @@ public class RequestItemRestController extends AbstractController  {
             itemRecallResponse = om.readValue(response, ItemRecallResponse.class);
         } catch (RestClientException ex) {
             getLogger().error(RecapConstants.LOG_ERROR_REST_CLIENT, ex);
-            getLogger().error(RecapConstants.LOG_ERROR_REST_CLIENT + ex.getMessage());
+            getLogger().error(String.format(RecapConstants.LOG_ERROR_REST_CLIENT +"%s", ex.getMessage()));
             itemRecallResponse.setScreenMessage(ex.getMessage());
         } catch (Exception ex) {
             getLogger().error(RecapCommonConstants.LOG_ERROR, ex);
-            getLogger().error(RecapCommonConstants.LOG_ERROR + ex.getMessage());
+            getLogger().error(String.format(RecapCommonConstants.LOG_ERROR +"%s", ex.getMessage()));
             itemRecallResponse.setScreenMessage(ex.getMessage());
         }
         return itemRecallResponse;
@@ -482,7 +482,7 @@ public class RequestItemRestController extends AbstractController  {
         try {
             itemRequestInformation.setPatronBarcode(patronInformationRequest.getPatronIdentifier());
             itemRequestInformation.setItemOwningInstitution(patronInformationRequest.getItemOwningInstitution());
-            HttpEntity request = new HttpEntity(itemRequestInformation);
+            HttpEntity request = new HttpEntity<>(itemRequestInformation);
             responseEntity = getRestTemplate().exchange(getScsbCircUrl() + RecapConstants.URL_REQUEST_PATRON_INFORMATION, HttpMethod.POST, request, PatronInformationResponse.class);
             patronInformation = responseEntity.getBody();
         } catch (RestClientException ex) {
@@ -511,7 +511,7 @@ public class RequestItemRestController extends AbstractController  {
         logger.info("Refile Request Received");
         ItemRefileResponse itemRefileResponse;
         HttpEntity<ItemRefileResponse> responseEntity;
-        HttpEntity request = new HttpEntity(itemRefileRequest);
+        HttpEntity request = new HttpEntity<>(itemRefileRequest);
         logger.info("Refile request received for the barcodes : {} where request id's are : {}",itemRefileRequest.getItemBarcodes(),itemRefileRequest.getRequestIds());
         responseEntity = getRestTemplate().exchange(getScsbCircUrl() + RecapConstants.URL_REQUEST_RE_FILE, HttpMethod.POST, request, ItemRefileResponse.class);
         itemRefileResponse = responseEntity.getBody();
@@ -610,10 +610,10 @@ public class RequestItemRestController extends AbstractController  {
     public ResponseEntity replaceRequestToLAS(@ApiParam(value = "Parameters to replace the request", required = true, name = "replaceRequest") @RequestBody ReplaceRequest replaceRequest) {
         try {
             Map<String, String> resultMap = getRestTemplate().postForObject(getScsbCircUrl() + RecapConstants.URL_REQUEST_REPLACE, replaceRequest, Map.class);
-            return new ResponseEntity(resultMap, getHttpHeaders(), HttpStatus.OK);
+            return new ResponseEntity<>(resultMap, getHttpHeaders(), HttpStatus.OK);
         } catch (Exception ex) {
             logger.error(RecapCommonConstants.LOG_ERROR, ex);
-            return new ResponseEntity(RecapConstants.SCSB_CIRC_SERVICE_UNAVAILABLE, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
+            return new ResponseEntity<>(RecapConstants.SCSB_CIRC_SERVICE_UNAVAILABLE, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 

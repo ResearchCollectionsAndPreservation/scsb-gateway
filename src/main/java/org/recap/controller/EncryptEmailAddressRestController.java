@@ -22,7 +22,7 @@ public class EncryptEmailAddressRestController extends AbstractController {
     private static final Logger logger = LoggerFactory.getLogger(EncryptEmailAddressRestController.class);
 
     @GetMapping(value = "/encryptEmailAddress")
-    public ResponseEntity encryptEmailAddress() {
+    public ResponseEntity<String> encryptEmailAddress() {
         String response = "";
         try {
             HttpEntity requestEntity = getHttpEntity();
@@ -30,8 +30,8 @@ public class EncryptEmailAddressRestController extends AbstractController {
             response  = exchange.getBody();
         } catch (Exception e) {
             logger.error(RecapCommonConstants.LOG_ERROR, e);
-            return new ResponseEntity(response, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
+            return new ResponseEntity<>(response, getHttpHeaders(), HttpStatus.SERVICE_UNAVAILABLE);
         }
-        return new ResponseEntity(response, getHttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(response, getHttpHeaders(), HttpStatus.OK);
     }
 }

@@ -89,7 +89,7 @@ public class SearchRecordsRestController extends AbstractController {
             @ApiParam(name="pageSize", value = "Page Size in Numers - 10, 20 30...") @RequestParam(name="pageSize", required = false) Integer pageSize
     ) {
         HttpEntity<List> responseEntity = null;
-        HttpEntity request = new HttpEntity(getRestHeaderService().getHttpHeaders());
+        HttpEntity request = new HttpEntity<>(getRestHeaderService().getHttpHeaders());
         List<SearchResultRow> searchResultRows = null;
         try {
 

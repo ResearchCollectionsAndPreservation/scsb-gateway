@@ -54,7 +54,7 @@ public class PurgeRestController extends AbstractController {
             getLogger().error("Exception",e);
         }
 
-        return new ResponseEntity(response,getHttpHeaders(),HttpStatus.OK);
+        return new ResponseEntity<>(response,getHttpHeaders(),HttpStatus.OK);
     }
 
     /**
@@ -74,6 +74,6 @@ public class PurgeRestController extends AbstractController {
         } catch (Exception e) {
             getLogger().error("Exception", e);
         }
-        return new ResponseEntity(response, getHttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(response, getHttpHeaders(), HttpStatus.OK);
     }
 }
