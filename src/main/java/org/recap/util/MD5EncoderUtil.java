@@ -9,19 +9,19 @@ import java.security.NoSuchAlgorithmException;
  */
 public class MD5EncoderUtil {
 
-    public String getMD5EncodingString(String text) {
+    public String getMD5EncodingString(String text) throws NoSuchAlgorithmException {
         try {
             MessageDigest md = getMd5();
             byte[] messageDigest = md.digest(text.getBytes());
             BigInteger number = new BigInteger(1, messageDigest);
             String hashtext = number.toString(16);
             while (hashtext.length() < 32) {
-                hashtext = "0" + hashtext;
+                hashtext = "0".concat(hashtext);
             }
             return hashtext;
         }
         catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new NoSuchAlgorithmException(e);
         }
     }
 

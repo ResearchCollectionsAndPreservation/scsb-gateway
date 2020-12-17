@@ -99,7 +99,6 @@ public class AbstractController {
     public HttpHeaders getHttpHeaders() {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add(RecapCommonConstants.RESPONSE_DATE, new Date().toString());
-        //responseHeaders.add(RecapCommonConstants.RESPONSE_HEADER_CONTENT_TYPE,RecapCommonConstants.RESPONSE_HEADER_CONTENT_TYPE_VALUE);
         return responseHeaders;
     }
 

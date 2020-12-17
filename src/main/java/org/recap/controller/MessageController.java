@@ -3,7 +3,6 @@ package org.recap.controller;
 import org.json.JSONObject;
 import org.recap.util.PropertyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,13 +14,12 @@ class MessageRestController {
     @Autowired
     PropertyUtil propertyUtil;
     @GetMapping("/{institutionCode}")
-    Map<String, Object> getValue(@PathVariable("institutionCode") String institutionCode) {
+    public Map<String, Object> getValue(@PathVariable("institutionCode") String institutionCode) {
     JSONObject json  = propertyUtil.getPropertyByInstitution(institutionCode);
-    Map<String, Object> response = json.toMap();
-    return response;
+    return json.toMap();
 }
     @GetMapping("/test")
-   String getValue() {
+    public String  getValue() {
 
         return "response";
     }
