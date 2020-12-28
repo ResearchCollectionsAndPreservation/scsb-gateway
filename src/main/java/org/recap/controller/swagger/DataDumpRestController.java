@@ -56,10 +56,10 @@ public class DataDumpRestController extends AbstractController  {
     @ResponseBody
     public ResponseEntity exportDataDump(@ApiParam(value = "Institution code(s) for requesting shared/open updates from partners: PUL = Princeton, CUL = Columbia, NYPL = New York Public Library" , required = true, name = "institutionCodes") @RequestParam String institutionCodes,
                                          @ApiParam(value = "Institution codes of the requesting institution. PUL = Princeton, CUL = Columbia, NYPL = New York Public Library",required=true, name = "requestingInstitutionCode") @RequestParam String requestingInstitutionCode,
-                                         @ApiParam(value = "Type of export - Incremental (use 1) or Deleted (use 2)" , required = true , name = "fetchType") @RequestParam String fetchType,
+                                         @ApiParam(value = "Type of export - Incremental (use 1) or Deleted (use 2) or Full Dump (use 10)" , required = true , name = "fetchType") @RequestParam String fetchType,
                                          @ApiParam(value = "Type of format - Marc xml (use 0) or SCSB xml (use 1), for deleted records only json format (use 2)",required=true, name = "outputFormat") @RequestParam String outputFormat,
                                          @ApiParam(value = "Get updates to middleware collection since the date provided. Date format will be a string (yyyy-MM-dd HH:mm) and is Eastern Time.",name = "date") @RequestParam(required = false) String date,
-                                         @ApiParam(value = "Data can be requested by Collection Group ID, either Shared (use 1) or Open (use 2). Default is both, can use 1,2 as well.", name = "collectionGroupIds") @RequestParam(required=false) String collectionGroupIds,
+                                         @ApiParam(value = "Data can be requested by Collection Group ID, either Shared (use 1) or Open (use 2) or Private (use 3). Default is Shared and Open, can use 1,2,3 as well.", name = "collectionGroupIds") @RequestParam(required=false) String collectionGroupIds,
                                          @ApiParam(value = "Type of transmission - for FTP use 0, for HTTP response use 1. Default is FTP.", name = "transmissionType")@RequestParam(required=false) String transmissionType,
                                          @ApiParam(value = "Email address to whom email will be sent upon completion" , name = "emailToAddress")@RequestParam(required=false) String emailToAddress
     ){
