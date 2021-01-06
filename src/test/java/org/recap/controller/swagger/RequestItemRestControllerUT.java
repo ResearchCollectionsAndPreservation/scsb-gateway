@@ -316,7 +316,7 @@ public class RequestItemRestControllerUT extends BaseTestCase{
 
     @Test
     public void replaceRequestToLAS(){
-        ReplaceRequest replaceRequest = null;
+        ReplaceRequest replaceRequest = new ReplaceRequest();
         Map<String, String> responseEntity = new HashMap<>();
         Mockito.when(requestItemRestController.getRestTemplate()).thenReturn(mockRestTemplate);
         Mockito.when(requestItemRestController.getScsbCircUrl()).thenReturn(scsbCircUrl);
