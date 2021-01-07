@@ -46,7 +46,7 @@ public class UpdateCgdRestController extends AbstractController {
                     .queryParam(RecapCommonConstants.CGD_CHANGE_NOTES, cgdChangeNotes)
                     .queryParam(RecapCommonConstants.USER_NAME, userName);
 
-            ResponseEntity<String> responseEntity = getRestTemplate().exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity, String.class);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity, String.class);
             statusResponse = responseEntity.getBody();
         } catch (Exception e) {
             logger.error(RecapCommonConstants.LOG_ERROR,e);

@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,6 +55,7 @@ public class DataDumpRestController extends AbstractController  {
     @ResponseBody
     public ResponseEntity exportDataDump(@ApiParam(value = "Institution code(s) for requesting shared/open updates from partners: PUL = Princeton, CUL = Columbia, NYPL = New York Public Library" , required = true, name = "institutionCodes") @RequestParam String institutionCodes,
                                          @ApiParam(value = "Institution codes of the requesting institution. PUL = Princeton, CUL = Columbia, NYPL = New York Public Library",required=true, name = "requestingInstitutionCode") @RequestParam String requestingInstitutionCode,
+                                         @ApiParam(value = "Ims depository - RECAP (use RECAP) or Harvard depository (use HD).Default is RECAP can use RECAP,HD as well", name = "imsDepositoryCodes") @RequestParam(required=false) String imsDepositoryCodes,
                                          @ApiParam(value = "Type of export - Incremental (use 1) or Deleted (use 2) or Full Dump (use 10)" , required = true , name = "fetchType") @RequestParam String fetchType,
                                          @ApiParam(value = "Type of format - Marc xml (use 0) or SCSB xml (use 1), for deleted records only json format (use 2)",required=true, name = "outputFormat") @RequestParam String outputFormat,
                                          @ApiParam(value = "Get updates to middleware collection since the date provided. Date format will be a string (yyyy-MM-dd HH:mm) and is Eastern Time.",name = "date") @RequestParam(required = false) String date,
@@ -63,14 +63,13 @@ public class DataDumpRestController extends AbstractController  {
                                          @ApiParam(value = "Type of transmission - for FTP use 0, for HTTP response use 1. Default is FTP.", name = "transmissionType")@RequestParam(required=false) String transmissionType,
                                          @ApiParam(value = "Email address to whom email will be sent upon completion" , name = "emailToAddress")@RequestParam(required=false) String emailToAddress
     ){
-        RestTemplate restTemplate = getRestTemplate();
         Map<String,String> inputMap = new HashMap<>();
-        setInputMapValues(inputMap, institutionCodes, requestingInstitutionCode, fetchType, outputFormat, date, collectionGroupIds, transmissionType, emailToAddress);
+        setInputMapValues(inputMap, institutionCodes, requestingInstitutionCode, fetchType, outputFormat, date, collectionGroupIds, transmissionType, emailToAddress,imsDepositoryCodes);
         try {
             HttpEntity requestEntity = getSwaggerHttpEntity();
             HttpHeaders responseHeaders = getHttpHeaders();
             responseHeaders.add(RecapCommonConstants.RESPONSE_HEADER_CONTENT_TYPE,RecapCommonConstants.RESPONSE_HEADER_CONTENT_TYPE_VALUE);
-            ResponseEntity<String> response = restTemplate.exchange(getScsbEtlUrl() + "dataDump/exportDataDump/?institutionCodes={institutionCodes}&requestingInstitutionCode={requestingInstitutionCode}&fetchType={fetchType}&outputFormat={outputFormat}&date={date}&collectionGroupIds={collectionGroupIds}&transmissionType={transmissionType}&emailToAddress={emailToAddress}", HttpMethod.GET, requestEntity, String.class, inputMap);
+            ResponseEntity<String> response = restTemplate.exchange(getScsbEtlUrl() + "dataDump/exportDataDump/?institutionCodes={institutionCodes}&requestingInstitutionCode={requestingInstitutionCode}&imsDepositoryCodes={imsDepositoryCodes}&fetchType={fetchType}&outputFormat={outputFormat}&date={date}&collectionGroupIds={collectionGroupIds}&transmissionType={transmissionType}&emailToAddress={emailToAddress}", HttpMethod.GET, requestEntity, String.class, inputMap);
             return new ResponseEntity<>(response.getBody(), responseHeaders, response.getStatusCode());
         } catch (Exception exception) {
             logger.error("error-->",exception);
@@ -99,7 +98,7 @@ public class DataDumpRestController extends AbstractController  {
     @ResponseBody
     public ResponseEntity exportDataDumpWithToDate(@ApiParam(value = "Institution code(s) for requesting shared/open updates from partners: PUL = Princeton, CUL = Columbia, NYPL = New York Public Library" , required = true, name = "institutionCodes") @RequestParam String institutionCodes,
                                          @ApiParam(value = "Institution codes of the requesting institution. PUL = Princeton, CUL = Columbia, NYPL = New York Public Library",required=true, name = "requestingInstitutionCode") @RequestParam String requestingInstitutionCode,
-                                         @ApiParam(value = "Type of export - Incremental (use 1) or Deleted (use 2)" , required = true , name = "fetchType") @RequestParam String fetchType,
+                                         @ApiParam(value = "Ims depository - RECAP (use RECAP) or Harvard depository (use HD)" , required = true , name = "imsDepositoryCodes") @RequestParam String imsDepositoryCodes, @ApiParam(value = "Type of export - Incremental (use 1) or Deleted (use 2)" , required = true , name = "fetchType") @RequestParam String fetchType,
                                          @ApiParam(value = "Type of format - Marc xml (use 0) or SCSB xml (use 1), for deleted records only json format (use 2)",required=true, name = "outputFormat") @RequestParam String outputFormat,
                                          @ApiParam(value = "Get updates to middleware collection since the date provided. Date format will be a string (yyyy-MM-dd HH:mm) and is Eastern Time.",name = "date") @RequestParam(required = false) String date,
                                          @ApiParam(value = "Get updates to middleware collection until the date provided. Date format will be a string (yyyy-MM-dd HH:mm) and is Eastern Time.",name = "toDate") @RequestParam(required = false) String toDate,
@@ -107,9 +106,8 @@ public class DataDumpRestController extends AbstractController  {
                                          @ApiParam(value = "Type of transmission - for FTP use 0, for HTTP response use 1. Default is FTP.", name = "transmissionType")@RequestParam(required=false) String transmissionType,
                                          @ApiParam(value = "Email address to whom email will be sent upon completion" , name = "emailToAddress")@RequestParam(required=false) String emailToAddress
     ){
-        RestTemplate restTemplate = getRestTemplate();
         Map<String,String> inputMap = new HashMap<>();
-        setInputMapValues(inputMap, institutionCodes, requestingInstitutionCode, fetchType, outputFormat, date, collectionGroupIds, transmissionType, emailToAddress);
+        setInputMapValues(inputMap, institutionCodes, requestingInstitutionCode, fetchType, outputFormat, date, collectionGroupIds, transmissionType, emailToAddress,imsDepositoryCodes);
         inputMap.put("toDate",toDate);
         try {
             HttpEntity requestEntity = getSwaggerHttpEntity();
@@ -131,7 +129,7 @@ public class DataDumpRestController extends AbstractController  {
     }
 
     private void setInputMapValues(Map<String,String> inputMap, String institutionCodes, String requestingInstitutionCode, String fetchType,
-                                   String outputFormat, String date, String collectionGroupIds, String transmissionType, String emailToAddress)
+                                   String outputFormat, String date, String collectionGroupIds, String transmissionType, String emailToAddress,String imsDepositoryCodes)
     {
         inputMap.put("institutionCodes",institutionCodes);
         inputMap.put("requestingInstitutionCode",requestingInstitutionCode);
@@ -141,5 +139,6 @@ public class DataDumpRestController extends AbstractController  {
         inputMap.put("collectionGroupIds",collectionGroupIds);
         inputMap.put("transmissionType",transmissionType);
         inputMap.put("emailToAddress",emailToAddress);
+        inputMap.put("imsDepositoryCodes",imsDepositoryCodes);
     }
 }

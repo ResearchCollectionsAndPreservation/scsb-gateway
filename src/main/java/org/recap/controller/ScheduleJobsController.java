@@ -51,7 +51,7 @@ public class ScheduleJobsController extends  AbstractController {
         try {
             HttpEntity<ScheduleJobRequest> httpEntity = new HttpEntity<>(scheduleJobRequest, getRestHeaderService().getHttpHeaders());
 
-            ResponseEntity<ScheduleJobResponse> responseEntity = getRestTemplate().exchange(getScsbScheduleUrl() + RecapCommonConstants.URL_SCHEDULE_JOBS, HttpMethod.POST, httpEntity, ScheduleJobResponse.class);
+            ResponseEntity<ScheduleJobResponse> responseEntity = restTemplate.exchange(getScsbScheduleUrl() + RecapCommonConstants.URL_SCHEDULE_JOBS, HttpMethod.POST, httpEntity, ScheduleJobResponse.class);
             scheduleJobResponse = responseEntity.getBody();
         } catch (Exception e) {
             logger.error(RecapCommonConstants.LOG_ERROR,e);

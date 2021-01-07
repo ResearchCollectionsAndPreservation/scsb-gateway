@@ -72,7 +72,7 @@ public class ReportsRestController extends AbstractController {
         try {
             HttpEntity<ReportsRequest> httpEntity = new HttpEntity<>(reportsRequest, getRestHeaderService().getHttpHeaders());
 
-            ResponseEntity<ReportsResponse> responseEntity = getRestTemplate().exchange(getScsbSolrClientUrl() + countsUrl, HttpMethod.POST, httpEntity, ReportsResponse.class);
+            ResponseEntity<ReportsResponse> responseEntity = restTemplate.exchange(getScsbSolrClientUrl() + countsUrl, HttpMethod.POST, httpEntity, ReportsResponse.class);
             reportsResponse = responseEntity.getBody();
         } catch (Exception e) {
             logger.error(RecapCommonConstants.LOG_ERROR, e);

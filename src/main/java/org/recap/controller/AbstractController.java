@@ -31,6 +31,9 @@ public class AbstractController {
     @Autowired
     RestHeaderService restHeaderService;
 
+    @Autowired
+    public RestTemplate restTemplate;
+
     /**
      * Gets scsb circ url.
      *
@@ -71,16 +74,6 @@ public class AbstractController {
      */
     public void setScsbSolrClientUrl(String scsbSolrClientUrl) {
         this.scsbSolrClient = scsbSolrClientUrl;
-    }
-
-
-    /**
-     * Get rest template rest template.
-     *
-     * @return the rest template
-     */
-    public RestTemplate getRestTemplate(){
-        return new RestTemplate();
     }
 
     public RestHeaderService getRestHeaderService() {

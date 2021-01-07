@@ -12,9 +12,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Map;
 
 /**
@@ -48,7 +49,7 @@ public class PurgeRestController extends AbstractController {
         Map response = null;
         try{
             HttpEntity requestEntity = getHttpEntity();
-            responseEntity = getRestTemplate().exchange(getScsbCircUrl()+ RecapConstants.REST_URL_PURGE_EMAIL_ADDRESS, HttpMethod.GET,requestEntity,Map.class);
+            responseEntity = restTemplate.exchange(getScsbCircUrl()+ RecapConstants.REST_URL_PURGE_EMAIL_ADDRESS, HttpMethod.GET,requestEntity,Map.class);
             response = responseEntity.getBody();
         }catch(Exception e){
             getLogger().error("Exception",e);
@@ -69,7 +70,7 @@ public class PurgeRestController extends AbstractController {
         Map response = null;
         try {
             HttpEntity requestEntity = getHttpEntity();
-            ResponseEntity<Map> responseEntity = getRestTemplate().exchange(getScsbCircUrl() + RecapConstants.REST_URL_PURGE_EXCEPTION_REQUESTS, HttpMethod.GET, requestEntity, Map.class);
+            ResponseEntity<Map> responseEntity = restTemplate.exchange(getScsbCircUrl() + RecapConstants.REST_URL_PURGE_EXCEPTION_REQUESTS, HttpMethod.GET, requestEntity, Map.class);
             response = responseEntity.getBody();
         } catch (Exception e) {
             getLogger().error("Exception", e);
