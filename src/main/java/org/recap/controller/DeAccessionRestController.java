@@ -32,7 +32,7 @@ public class DeAccessionRestController extends AbstractController{
         Map<String, String> resultMap = new HashMap<>();
         try {
             HttpEntity<String> requestEntity = new HttpEntity<>(deAccessionRequest, getRestHeaderService().getHttpHeaders());
-            resultMap = getRestTemplate().postForObject(getScsbCircUrl() + "/sharedCollection/deAccession", requestEntity, Map.class);
+            resultMap = restTemplate.postForObject(getScsbCircUrl() + "/sharedCollection/deAccession", requestEntity, Map.class);
         } catch (Exception ex) {
             logger.error(RecapCommonConstants.LOG_ERROR,ex);
         }

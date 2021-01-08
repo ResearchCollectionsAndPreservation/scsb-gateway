@@ -15,10 +15,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -51,7 +51,7 @@ public class SearchRecordsRestController extends AbstractController {
         try {
             HttpEntity<SearchRecordsRequest> httpEntity = new HttpEntity<>(searchRecordsRequest, getRestHeaderService().getHttpHeaders());
 
-            ResponseEntity<SearchRecordsResponse> responseEntity = getRestTemplate().exchange(getScsbSolrClientUrl() + RecapConstants.URL_SEARCH_BY_JSON, HttpMethod.POST, httpEntity, SearchRecordsResponse.class);
+            ResponseEntity<SearchRecordsResponse> responseEntity = restTemplate.exchange(getScsbSolrClientUrl() + RecapConstants.URL_SEARCH_BY_JSON, HttpMethod.POST, httpEntity, SearchRecordsResponse.class);
             searchRecordsResponse = responseEntity.getBody();
         } catch (Exception e) {
             logger.error("error--.",e);
@@ -103,7 +103,7 @@ public class SearchRecordsRestController extends AbstractController {
                     .queryParam("useRestrictions", useRestrictions)
                     .queryParam("pageSize", pageSize);
 
-            responseEntity = getRestTemplate().exchange(builder.build().encode().toUri(), HttpMethod.GET, request, List.class);
+            responseEntity = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, request, List.class);
             searchResultRows = responseEntity.getBody();
         } catch (Exception e) {
             searchResultRows = new ArrayList<>();

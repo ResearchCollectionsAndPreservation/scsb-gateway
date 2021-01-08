@@ -9,9 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.recap.RecapCommonConstants;
 import org.recap.RecapConstants;
 import org.recap.controller.AbstractController;
-import org.recap.model.accession.AccessionModelRequest;
 import org.recap.model.BibItemAvailabityStatusRequest;
 import org.recap.model.ItemAvailabityStatusRequest;
+import org.recap.model.accession.AccessionModelRequest;
 import org.recap.model.accession.AccessionResponse;
 import org.recap.model.deaccession.DeAccessionRequest;
 import org.recap.model.transfer.TransferRequest;
@@ -25,9 +25,9 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StopWatch;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,7 +55,6 @@ public class SharedCollectionRestController extends AbstractController {
      *
      * @return the rest template
      */
-    @Override
     public RestTemplate getRestTemplate() {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters()
