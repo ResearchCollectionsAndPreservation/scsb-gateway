@@ -12,5 +12,5 @@ public class ItemHoldCancelRequest extends AbstractRequestItem{
     private String patronIdentifier;
     private String bibId;
     private String pickupLocation;
-    private String trackingId; // NYPL - trackingId
+    private String trackingId;
 }

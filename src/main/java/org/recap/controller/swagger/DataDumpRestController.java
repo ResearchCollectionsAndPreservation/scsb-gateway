@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-
 import org.recap.RecapCommonConstants;
 import org.recap.RecapConstants;
 import org.recap.controller.AbstractController;
@@ -53,9 +52,9 @@ public class DataDumpRestController extends AbstractController  {
             notes = "The Export Data Dump API allows export of bibliographic records in SCSB database into MARCXML or SCSBXML format. This is used by partners to export records in preferred format and update their respective discovery systems. These jobs are scheduled to run by HTC support.", nickname = "exportDataDump", position = 0)
     @ApiResponses(value = {@ApiResponse(code = 200, message = RecapConstants.DATADUMP_PROCESS_STARTED)})
     @ResponseBody
-    public ResponseEntity exportDataDump(@ApiParam(value = "Institution code(s) for requesting shared/open updates from partners: PUL = Princeton, CUL = Columbia, NYPL = New York Public Library" , required = true, name = "institutionCodes") @RequestParam String institutionCodes,
-                                         @ApiParam(value = "Institution codes of the requesting institution. PUL = Princeton, CUL = Columbia, NYPL = New York Public Library",required=true, name = "requestingInstitutionCode") @RequestParam String requestingInstitutionCode,
-                                         @ApiParam(value = "Ims depository - RECAP (use RECAP) or Harvard depository (use HD).Default is RECAP can use RECAP,HD as well", name = "imsDepositoryCodes") @RequestParam(required=false) String imsDepositoryCodes,
+    public ResponseEntity exportDataDump(@ApiParam(value = "${swagger.values.institutionCodes}" , required = true, name = "institutionCodes") @RequestParam String institutionCodes,
+                                         @ApiParam(value = "${swagger.values.requestingInstitutionCode}",required=true, name = "requestingInstitutionCode") @RequestParam String requestingInstitutionCode,
+                                         @ApiParam(value = "${swagger.values.imsDepositoryCodes}", name = "imsDepositoryCodes") @RequestParam(required=false) String imsDepositoryCodes,
                                          @ApiParam(value = "Type of export - Incremental (use 1) or Deleted (use 2) or Full Dump (use 10)" , required = true , name = "fetchType") @RequestParam String fetchType,
                                          @ApiParam(value = "Type of format - Marc xml (use 0) or SCSB xml (use 1), for deleted records only json format (use 2)",required=true, name = "outputFormat") @RequestParam String outputFormat,
                                          @ApiParam(value = "Get updates to middleware collection since the date provided. Date format will be a string (yyyy-MM-dd HH:mm) and is Eastern Time.",name = "date") @RequestParam(required = false) String date,
@@ -96,9 +95,10 @@ public class DataDumpRestController extends AbstractController  {
             notes = "The Export Data Dump API allows export of bibliographic records in SCSB database into MARCXML or SCSBXML format. This is used by partners to export records in preferred format and update their respective discovery systems. These jobs are scheduled to run by HTC support.", nickname = "exportDataDump", position = 0)
     @ApiResponses(value = {@ApiResponse(code = 200, message = RecapConstants.DATADUMP_PROCESS_STARTED)})
     @ResponseBody
-    public ResponseEntity exportDataDumpWithToDate(@ApiParam(value = "Institution code(s) for requesting shared/open updates from partners: PUL = Princeton, CUL = Columbia, NYPL = New York Public Library" , required = true, name = "institutionCodes") @RequestParam String institutionCodes,
-                                         @ApiParam(value = "Institution codes of the requesting institution. PUL = Princeton, CUL = Columbia, NYPL = New York Public Library",required=true, name = "requestingInstitutionCode") @RequestParam String requestingInstitutionCode,
-                                         @ApiParam(value = "Ims depository - RECAP (use RECAP) or Harvard depository (use HD)" , required = true , name = "imsDepositoryCodes") @RequestParam String imsDepositoryCodes, @ApiParam(value = "Type of export - Incremental (use 1) or Deleted (use 2)" , required = true , name = "fetchType") @RequestParam String fetchType,
+    public ResponseEntity exportDataDumpWithToDate(@ApiParam(value = "${swagger.values.institutionCodes}" , required = true, name = "institutionCodes") @RequestParam String institutionCodes,
+                                         @ApiParam(value = "${swagger.values.requestingInstitutionCode}",required=true, name = "requestingInstitutionCode") @RequestParam String requestingInstitutionCode,
+                                         @ApiParam(value = "${swagger.values.imsDepositoryCodes}" , required = true , name = "imsDepositoryCodes") @RequestParam String imsDepositoryCodes,
+                                         @ApiParam(value = "Type of export - Incremental (use 1) or Deleted (use 2)" , required = true , name = "fetchType") @RequestParam String fetchType,
                                          @ApiParam(value = "Type of format - Marc xml (use 0) or SCSB xml (use 1), for deleted records only json format (use 2)",required=true, name = "outputFormat") @RequestParam String outputFormat,
                                          @ApiParam(value = "Get updates to middleware collection since the date provided. Date format will be a string (yyyy-MM-dd HH:mm) and is Eastern Time.",name = "date") @RequestParam(required = false) String date,
                                          @ApiParam(value = "Get updates to middleware collection until the date provided. Date format will be a string (yyyy-MM-dd HH:mm) and is Eastern Time.",name = "toDate") @RequestParam(required = false) String toDate,

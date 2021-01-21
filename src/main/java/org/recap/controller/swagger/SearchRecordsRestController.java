@@ -7,9 +7,9 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.recap.RecapConstants;
 import org.recap.controller.AbstractController;
-import org.recap.model.SearchRecordsRequest;
 import org.recap.model.SearchRecordsResponse;
 import org.recap.model.SearchResultRow;
+import org.recap.model.search.SearchRecordsRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -81,7 +81,7 @@ public class SearchRecordsRestController extends AbstractController {
     public List<SearchResultRow> searchRecordsServiceGet(
             @RequestParam(name="fieldValue", required = false)  String fieldValue,
             @ApiParam(name="fieldName",required = false,allowableValues = "Author_search,Title_search,TitleStartsWith,Publisher,PublicationPlace,PublicationDate,Subject,ISBN,ISSN,OCLCNumber,Notes,CallNumber_search,Barcode") @RequestParam(name="fieldName", value = "fieldName" , required = false)  String fieldName,
-            @ApiParam(name="owningInstitutions", value= "Owning Institutions : PUL, CUL, NYPL")@RequestParam(name="owningInstitutions",required = false ) String owningInstitutions,
+            @ApiParam(name="owningInstitutions", value= "${swagger.values.owningInstitutions}")@RequestParam(name="owningInstitutions",required = false ) String owningInstitutions,
             @ApiParam(name="collectionGroupDesignations", value = "collection Designations : Shared,Private,Open") @RequestParam(name="collectionGroupDesignations", value = "collectionGroupDesignations" , required = false)  String collectionGroupDesignations,
             @ApiParam(name="availability", value = "Availability: Available, NotAvailable") @RequestParam(name="availability", value = "availability" , required = false)  String availability,
             @ApiParam(name="materialTypes", value = "MaterialTypes: Monograph, Serial, Other") @RequestParam(name="materialTypes", value = "materialTypes" , required = false)  String materialTypes,
