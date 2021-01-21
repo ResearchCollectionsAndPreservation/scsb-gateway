@@ -9,24 +9,23 @@ import java.util.Optional;
 /**
  * Created by hemalathas on 1/11/16.
  */
-//@JsonIgnoreProperties({"itemBarcodes", "titleIdentifier", "patronBarcode","patronBarcode","emailAddress","requestingInstitution","requestingInstitution","requestType","deliveryLocation","requestNotes","startPage","endPage","chapterTitle"})
 @Data
 public class ItemRequestInformation {
     private List<String> itemBarcodes;
     private String titleIdentifier;
-    private String itemOwningInstitution = ""; // PUL, CUL, NYPL
+    private String itemOwningInstitution = "";
     private String patronBarcode = "";
     private String emailAddress = "";
-    private String requestingInstitution = ""; // PUL, CUL, NYPL
-    private String requestType = ""; // Retrieval,EDD, Hold, Recall, Borrow Direct
+    private String requestingInstitution = "";
+    private String requestType = "";
     private String deliveryLocation = "";
     public String getDeliveryLocation() {
         return Optional.ofNullable(deliveryLocation).orElse("");
     }
     private String requestNotes = "";
-    private String trackingId; // NYPL - trackingId
-    private String author; // NYPL - author
-    private String callNumber; // NYPL - callNumber
+    private String trackingId;
+    private String author;
+    private String callNumber;
 
     /**
      * EDD Request

@@ -12,5 +12,5 @@ import java.util.List;
 @Setter
 public abstract class AbstractRequestItem {
     private List<String> itemBarcodes;
-    private String itemOwningInstitution=""; // PUL, CUL, NYPL
+    private String itemOwningInstitution="";
 }

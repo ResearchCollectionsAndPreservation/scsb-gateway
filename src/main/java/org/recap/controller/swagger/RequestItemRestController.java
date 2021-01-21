@@ -568,7 +568,7 @@ public class RequestItemRestController extends AbstractController  {
     }
 
     /**
-     * This method refiles the item in ILS. Currently only NYPL has the refile endpoint.
+     * This method refiles the item in ILS.
      * @param itemBarcode
      * @param owningInstitution
      * @return

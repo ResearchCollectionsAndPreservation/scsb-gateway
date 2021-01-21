@@ -14,5 +14,5 @@ public class PatronInformationRequest{
     @ApiModelProperty(name = "patronIdentifier", position = 0, required = true)
     private String patronIdentifier = "";
     @ApiModelProperty(name = "itemOwningInstitution", position = 1, required = true)
-    private String itemOwningInstitution=""; // PUL, CUL, NYPL
+    private String itemOwningInstitution="";
 }

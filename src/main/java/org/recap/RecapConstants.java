@@ -6,7 +6,7 @@ package org.recap;
 public final class RecapConstants {
 
 
-    public static final String INVALID_REQUEST_INSTITUTION = "Enter valid RequestingInstitution: PUL, CUL or NYPL.";
+    public static final String INVALID_REQUEST_INSTITUTION = "Enter valid RequestingInstitution";
     public static final String START_PAGE_AND_END_PAGE_REQUIRED = "Start page and End page information is required for EDD request.";
 
     // MQ URI
