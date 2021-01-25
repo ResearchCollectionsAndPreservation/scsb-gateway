@@ -49,7 +49,7 @@ public class PurgeRestController extends AbstractController {
         Map response = null;
         try{
             HttpEntity requestEntity = getHttpEntity();
-            responseEntity = restTemplate.exchange(getScsbCircUrl()+ RecapConstants.REST_URL_PURGE_EMAIL_ADDRESS, HttpMethod.GET,requestEntity,Map.class);
+            responseEntity = restTemplate.exchange(getScsbCoreUrl()+ RecapConstants.REST_URL_PURGE_EMAIL_ADDRESS, HttpMethod.GET,requestEntity,Map.class);
             response = responseEntity.getBody();
         }catch(Exception e){
             getLogger().error("Exception",e);
@@ -70,7 +70,7 @@ public class PurgeRestController extends AbstractController {
         Map response = null;
         try {
             HttpEntity requestEntity = getHttpEntity();
-            ResponseEntity<Map> responseEntity = restTemplate.exchange(getScsbCircUrl() + RecapConstants.REST_URL_PURGE_EXCEPTION_REQUESTS, HttpMethod.GET, requestEntity, Map.class);
+            ResponseEntity<Map> responseEntity = restTemplate.exchange(getScsbCoreUrl() + RecapConstants.REST_URL_PURGE_EXCEPTION_REQUESTS, HttpMethod.GET, requestEntity, Map.class);
             response = responseEntity.getBody();
         } catch (Exception e) {
             getLogger().error("Exception", e);
