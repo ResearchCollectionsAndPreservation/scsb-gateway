@@ -2,6 +2,8 @@ package org.recap.controller;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -10,9 +12,7 @@ import org.recap.RecapConstants;
 import org.recap.service.RestHeaderService;
 import org.recap.model.ScheduleJobRequest;
 import org.recap.model.ScheduleJobResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,10 +34,10 @@ public class ScheduleJobsControllerUT extends BaseControllerUT {
     @Mock
     private RestTemplate mockRestTemplate;
 
-    @Mock
+    @InjectMocks
     private ScheduleJobsController scheduleJobsController;
 
-    @Autowired
+    @Mock
     RestHeaderService restHeaderService;
 
     public String getScsbScheduleUrl() {
@@ -54,35 +54,32 @@ public class ScheduleJobsControllerUT extends BaseControllerUT {
     }
 
     @Test
-    public void testScheduleJob() throws Exception {
+    public void testScheduleJob() {
         ScheduleJobRequest scheduleJobRequest = new ScheduleJobRequest();
         scheduleJobRequest.setJobName(RecapCommonConstants.PURGE_EXCEPTION_REQUESTS);
         scheduleJobRequest.setScheduleType(RecapConstants.SCHEDULE);
         ScheduleJobResponse scheduleJobResponse = new ScheduleJobResponse();
         scheduleJobResponse.setMessage("Scheduled");
         ResponseEntity<ScheduleJobResponse> responseEntity = new ResponseEntity<>(scheduleJobResponse, HttpStatus.OK);
-        HttpEntity<ScheduleJobRequest> httpEntity = new HttpEntity<>(scheduleJobRequest, restHeaderService.getHttpHeaders());
-        Mockito.when(mockRestTemplate.exchange(getScsbScheduleUrl() + RecapCommonConstants.URL_SCHEDULE_JOBS, HttpMethod.POST, httpEntity, ScheduleJobResponse.class)).thenReturn(responseEntity);
-        Mockito.when(scheduleJobsController.getRestTemplate()).thenReturn(mockRestTemplate);
+        Mockito.doReturn(responseEntity).when(mockRestTemplate).exchange(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.any(HttpMethod.class),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.<Class<ScheduleJobResponse>>any());
         ReflectionTestUtils.setField(scheduleJobsController,"scsbScheduleUrl",scsbScheduleUrl);
-        Mockito.when(scheduleJobsController.getScsbScheduleUrl()).thenCallRealMethod();
-        Mockito.when(scheduleJobsController.getRestHeaderService()).thenReturn(restHeaderService);
-        Mockito.when(scheduleJobsController.scheduleJob(scheduleJobRequest)).thenCallRealMethod();
         ScheduleJobResponse scheduleJobResponse1 = scheduleJobsController.scheduleJob(scheduleJobRequest);
         assertNotNull(scheduleJobResponse1);
     }
 
     @Test
-    public void testScheduleJob_Exception() throws Exception {
+    public void testScheduleJob_Exception() {
         ScheduleJobRequest scheduleJobRequest = new ScheduleJobRequest();
-        Mockito.when(scheduleJobsController.scheduleJob(scheduleJobRequest)).thenCallRealMethod();
         ScheduleJobResponse scheduleJobResponse1 = scheduleJobsController.scheduleJob(scheduleJobRequest);
         assertNull(scheduleJobResponse1.getMessage());
     }
 
     @Test
-    public void testcustomLoggerTest() throws Exception {
-        Mockito.when(scheduleJobsController.customLoggerTest()).thenCallRealMethod();
+    public void testcustomLoggerTest() {
         ScheduleJobResponse scheduleJobResponse1 = scheduleJobsController.customLoggerTest();
         assertEquals("Scheduler job response",scheduleJobResponse1.getMessage());
     }
