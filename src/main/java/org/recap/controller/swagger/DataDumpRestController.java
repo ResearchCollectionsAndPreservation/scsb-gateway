@@ -120,14 +120,6 @@ public class DataDumpRestController extends AbstractController  {
         }
     }
 
-    private HttpStatus getHttpStatus(String message){
-        if(message.equals(RecapConstants.DATADUMP_PROCESS_STARTED) || message.equals(RecapConstants.DATADUMP_NO_RECORD) || message.contains(RecapConstants.XML)){
-            return HttpStatus.OK;
-        }else{
-            return HttpStatus.BAD_REQUEST;
-        }
-    }
-
     private void setInputMapValues(Map<String,String> inputMap, String institutionCodes, String requestingInstitutionCode, String fetchType,
                                    String outputFormat, String date, String collectionGroupIds, String transmissionType, String emailToAddress,String imsDepositoryCodes)
     {
