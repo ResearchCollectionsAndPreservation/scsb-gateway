@@ -8,6 +8,7 @@ import org.recap.model.ScheduleJobResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/scheduleService")
+@RefreshScope
 public class ScheduleJobsController extends  AbstractController {
 
     private static final Logger logger = LoggerFactory.getLogger(ScheduleJobsController.class);

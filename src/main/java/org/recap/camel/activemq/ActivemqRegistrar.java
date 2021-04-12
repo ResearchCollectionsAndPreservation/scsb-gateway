@@ -6,6 +6,7 @@ import org.apache.camel.component.activemq.ActiveMQComponent;
 import org.recap.RecapCommonConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
 import javax.jms.ConnectionFactory;
@@ -16,6 +17,7 @@ import javax.jms.JMSException;
  * Created by premkb on 12/10/16.
  */
 @Component
+@RefreshScope
 public class ActivemqRegistrar {
 
     /**
