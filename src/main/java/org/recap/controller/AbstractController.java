@@ -5,6 +5,7 @@ import org.recap.service.RestHeaderService;
 import org.recap.spring.SwaggerAPIProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.HttpEntity;
@@ -15,8 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
 
-@Service
-@RefreshScope (proxyMode = ScopedProxyMode.DEFAULT)
+@RefreshScope
 public class AbstractController {
 
     @Value("${scsb.circ.url}")
