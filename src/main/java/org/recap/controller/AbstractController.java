@@ -10,12 +10,14 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Date;
 
-@Component
-@RefreshScope (proxyMode = ScopedProxyMode.DEFAULT)
+@Controller
+@RefreshScope
 public class AbstractController {
 
     @Value("${scsb.circ.url}")
