@@ -6,6 +6,7 @@ import org.recap.spring.SwaggerAPIProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Date;
 
 @Component
-@RefreshScope
+@RefreshScope (proxyMode = ScopedProxyMode.DEFAULT)
 public class AbstractController {
 
     @Value("${scsb.circ.url}")
