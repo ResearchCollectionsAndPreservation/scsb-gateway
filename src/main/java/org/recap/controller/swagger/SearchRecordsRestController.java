@@ -12,6 +12,7 @@ import org.recap.model.SearchResultRow;
 import org.recap.model.search.SearchRecordsRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/searchService")
 @Api(value="search")
+@RefreshScope
 public class SearchRecordsRestController extends AbstractController {
 
     private static final Logger logger = LoggerFactory.getLogger(SearchRecordsRestController.class);
