@@ -8,6 +8,7 @@ import org.recap.RecapConstants;
 import org.recap.controller.AbstractController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/purgeRestController")
+@RefreshScope
 public class PurgeRestController extends AbstractController {
 
     private static final Logger logger = LoggerFactory.getLogger(PurgeRestController.class);

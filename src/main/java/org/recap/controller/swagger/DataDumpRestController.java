@@ -10,6 +10,7 @@ import org.recap.RecapConstants;
 import org.recap.controller.AbstractController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -31,6 +32,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/dataDump")
 @Api(value="dataDump")
+@RefreshScope
 public class DataDumpRestController extends AbstractController  {
 
     private static final Logger logger = LoggerFactory.getLogger(DataDumpRestController.class);

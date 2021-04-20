@@ -38,6 +38,7 @@ import org.recap.model.ReplaceRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -65,6 +66,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/requestItem")
 @Api(value = "requestItem")
+@RefreshScope
 public class RequestItemRestController extends AbstractController  {
 
     private static final Logger logger = LoggerFactory.getLogger(RequestItemRestController.class);

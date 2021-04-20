@@ -4,6 +4,7 @@ import org.recap.RecapCommonConstants;
 import org.recap.RecapConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 @RestController
 @RequestMapping("/updateCgdService")
+@RefreshScope
 public class UpdateCgdRestController extends AbstractController {
 
     private static final Logger logger = LoggerFactory.getLogger(UpdateCgdRestController.class);
