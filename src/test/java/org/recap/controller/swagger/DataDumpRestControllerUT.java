@@ -37,6 +37,7 @@ public class DataDumpRestControllerUT extends BaseTestCase{
     @Mock
     RestTemplate restTemplate;
 
+
     @Value("${scsb.etl.url}")
     private String scsbEtlUrl;
 

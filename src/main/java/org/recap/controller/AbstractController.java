@@ -1,5 +1,6 @@
 package org.recap.controller;
 
+import org.recap.PropertyKeyConstants;
 import org.recap.ScsbCommonConstants;
 import org.recap.service.RestHeaderService;
 import org.recap.spring.SwaggerAPIProvider;
@@ -15,16 +16,17 @@ import java.util.Date;
 @Component
 public class AbstractController {
 
-    @Value("${scsb.circ.url}")
+
+    @Value("${" + PropertyKeyConstants.SCSB_CIRC_URL + "}")
     private String scsbCircUrl;
 
-    @Value("${scsb.solr.doc.url}")
+    @Value("${" + PropertyKeyConstants.SCSB_SOLR_DOC_URL + "}")
     private String scsbSolrClient;
 
-    @Value("${scsb.etl.datadump.url}")
+    @Value("${" + PropertyKeyConstants.SCSB_ETL_DATADUMP_URL + "}")
     private String scsbEtlUrl;
 
-    @Value("${scsb.core.url}")
+    @Value("${" + PropertyKeyConstants.SCSB_CORE_URL + "}")
     private String scsbCoreUrl;
 
 

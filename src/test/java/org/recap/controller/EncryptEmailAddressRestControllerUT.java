@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.recap.PropertyKeyConstants;
 import org.recap.ScsbCommonConstants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -28,7 +29,7 @@ public class EncryptEmailAddressRestControllerUT extends BaseControllerUT{
     @Mock
     private RestTemplate mockRestTemplate;
 
-    @Value("${scsb.circ.url}")
+    @Value("${" + PropertyKeyConstants.SCSB_CIRC_URL + "}")
     String scsbCircUrl;
 
     @Before

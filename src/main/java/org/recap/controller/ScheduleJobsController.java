@@ -2,6 +2,7 @@ package org.recap.controller;
 
 import java.util.Date;
 
+import org.recap.PropertyKeyConstants;
 import org.recap.ScsbCommonConstants;
 import org.recap.model.ScheduleJobRequest;
 import org.recap.model.ScheduleJobResponse;
@@ -26,7 +27,7 @@ public class ScheduleJobsController extends  AbstractController {
 
     private static final Logger logger = LoggerFactory.getLogger(ScheduleJobsController.class);
 
-    @Value("${scsb.batch.schedule.url}")
+    @Value("${" + PropertyKeyConstants.SCSB_BATCH_SCHEDULER_URL + "}")
     private String scsbScheduleUrl;
 
     /**

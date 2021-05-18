@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.recap.PropertyKeyConstants;
 import org.recap.ScsbCommonConstants;
 import org.recap.ScsbConstants;
 import org.recap.controller.BaseControllerUT;
@@ -50,13 +51,13 @@ import static org.junit.Assert.assertTrue;
  */
 public class SharedCollectionRestControllerUT extends BaseControllerUT {
 
-    @Value("${scsb.solr.doc.url}")
+    @Value("${" + PropertyKeyConstants.SCSB_SOLR_DOC_URL + "}")
     String scsbSolrClientUrl;
 
-    @Value("${scsb.circ.url}")
+    @Value("${" + PropertyKeyConstants.SCSB_CIRC_URL + "}")
     String scsbCircUrl;
 
-    @Value("${scsb.core.url}")
+    @Value("${" + PropertyKeyConstants.SCSB_CORE_URL + "}")
     private String scsbCoreUrl;
 
 

@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.recap.PropertyKeyConstants;
 import org.recap.ScsbCommonConstants;
 import org.recap.ScsbConstants;
 import org.recap.service.RestHeaderService;
@@ -28,7 +29,7 @@ import static org.junit.Assert.assertNull;
  */
 public class ScheduleJobsControllerUT extends BaseControllerUT {
 
-    @Value("${scsb.batch.schedule.url}")
+    @Value("${" + PropertyKeyConstants.SCSB_BATCH_SCHEDULER_URL + "}")
     String scsbScheduleUrl;
 
     @Mock

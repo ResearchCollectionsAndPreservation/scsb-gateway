@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.recap.PropertyKeyConstants;
 import org.recap.service.RestHeaderService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -24,7 +25,7 @@ import static org.junit.Assert.assertNull;
 
 public class DeAccessionRestControllerUT extends BaseControllerUT{
 
-    @Value("${scsb.circ.url}")
+    @Value("${" + PropertyKeyConstants.ACTIVEMQ_BROKER_URL + "}")
     String scsbCircUrl;
 
     @Mock
