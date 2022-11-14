@@ -1,6 +1,7 @@
 package org.recap.service;
 
 import com.google.gson.Gson;
+import org.recap.ScsbConstants;
 import org.recap.controller.swagger.RequestItemRestController;
 import org.recap.entity.ItemRequestReceivedInformationEntity;
 import org.recap.model.ItemRequestInformation;
@@ -63,14 +64,24 @@ public class RequestItemService {
     }
 
     public RequestLogReportRequest submitRequests(RequestLogReportRequest requestLogReportRequest) {
+         Integer count = 0;
+         Boolean multiSubmit = false;
         if (requestLogReportRequest.getId() != 0) {
             ItemRequestInformation itemRequestInformation = prepareItemInfoFromrequest(requestLogReportRequest);
-            if (itemRequestInformation != null)
-                requestItemRestController.itemSubmitRequest(itemRequestInformation);
+
+            try {
+                if (itemRequestInformation != null)
+                    requestItemRestController.itemSubmitRequest(itemRequestInformation);
+                requestLogReportRequest.setStatus(ScsbConstants.SUCCESS);
+            } catch (Exception e) {
+                requestLogReportRequest.setStatus(ScsbConstants.FAILED);
+            }
+
         } else {
             List<ItemRequestInformation> itemRequestInformationList = new ArrayList<>();
             Page<ItemRequestReceivedInformationEntity> pageResponse = getCount(requestLogReportRequest);
             requestLogReportRequest.setPageSize(500);
+            multiSubmit = true;
             for (int i = 0; i < pageResponse.getTotalPages(); i++) {
                 List<ItemRequestReceivedInformationEntity> entityList = getCount(requestLogReportRequest).getContent();
                 for (ItemRequestReceivedInformationEntity entity : entityList) {
@@ -79,13 +90,17 @@ public class RequestItemService {
                         TimeUnit.SECONDS.sleep(1);
                         if (itemRequestInformation != null)
                             requestItemRestController.itemSubmitRequest(itemRequestInformation);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+                    } catch (Exception e){
+                        count++;
                     }
                 }
             }
         }
-        requestLogReportRequest.setStatus("Resubmit is successfull");
+        if(multiSubmit && count > 0){
+            requestLogReportRequest.setStatus(ScsbConstants.PARTIALLY);
+        } else if(multiSubmit){
+            requestLogReportRequest.setStatus(ScsbConstants.SUCCESS);
+        }
         return requestLogReportRequest;
     }
 
@@ -142,7 +157,7 @@ public class RequestItemService {
             } else if (requestLogReportRequest.getStatus() != null && !requestLogReportRequest.getStatus().isBlank() && !requestLogReportRequest.getStatus().isEmpty()) {
                 pageReponse = itemRequestInformationRepository.findByStatus(pageable, requestLogReportRequest.getStatus());
             } else {
-                pageReponse = itemRequestInformationRepository.findAll(pageable);
+                pageReponse = itemRequestInformationRepository.findAllByOrderByDateDesc(pageable);
             }
         }
         entityList = pageReponse.getContent();

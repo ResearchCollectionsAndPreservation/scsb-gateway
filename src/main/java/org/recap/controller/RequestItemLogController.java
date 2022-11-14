@@ -1,5 +1,6 @@
 package org.recap.controller;
 
+import org.recap.ScsbConstants;
 import org.recap.entity.ItemRequestReceivedInformationEntity;
 import org.recap.model.request.RequestLogReportRequest;
 import org.recap.service.RequestItemService;
@@ -35,7 +36,7 @@ public class RequestItemLogController {
             requestLogReportResponse = requestItemService.submitRequests(requestLogReportRequest);
         } catch (Exception e) {
             requestLogReportResponse = new RequestLogReportRequest();
-            requestLogReportResponse.setStatus("Resubmit failed");
+            requestLogReportResponse.setStatus(ScsbConstants.FAILED);
         }
         return new ResponseEntity<>(requestLogReportResponse, HttpStatus.OK);
     }

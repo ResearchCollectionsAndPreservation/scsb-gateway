@@ -61,6 +61,12 @@ public final class ScsbConstants {
 
     public static final String BULK_REQUEST_MESSAGE_RECEIVED = "Bulk request process initiated.";
 
+    public static final String SUCCESS = "SUCCESS";
+
+    public static final String FAILED = "FAILED";
+
+    public static final String PARTIALLY = "PARTIALLY";
+
     private ScsbConstants() {
     }
 }
