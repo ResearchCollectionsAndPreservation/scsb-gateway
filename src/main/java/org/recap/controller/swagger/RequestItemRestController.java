@@ -662,11 +662,13 @@ public class RequestItemRestController extends AbstractController  {
             log.error("error::", e);
             statusCode = e.getStatusCode();
             screenMessage = e.getResponseBodyAsString();
-            throw new RuntimeException();
+            requestItemService.updateItemRequest(itemRequestInfo);
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
         } catch (RestClientException e){
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
             throw new RestClientException(HttpStatus.SERVICE_UNAVAILABLE.toString());
         } catch (Exception e){
+            requestItemService.updateItemRequest(itemRequestInfo);
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
             throw new RuntimeException();
         }

@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
 import java.text.ParseException;
@@ -73,11 +74,15 @@ public class RequestItemService {
                 if (itemRequestInformation != null)
                     requestItemRestController.itemSubmitRequest(itemRequestInformation);
                 requestLogReportRequest.setStatus(ScsbConstants.SUCCESS);
+            } catch (HttpClientErrorException e) {
+                requestLogReportRequest.setStatus(ScsbConstants.SUCCESS);
+                return requestLogReportRequest;
             } catch (RestClientException e) {
                 requestLogReportRequest.setStatus(ScsbConstants.FAILED);
                 return requestLogReportRequest;
             }catch (Exception e) {
-                requestLogReportRequest.setStatus(ScsbConstants.FAILED);
+                requestLogReportRequest.setStatus(ScsbConstants.SUCCESS);
+                return requestLogReportRequest;
             }
 
         } else {
