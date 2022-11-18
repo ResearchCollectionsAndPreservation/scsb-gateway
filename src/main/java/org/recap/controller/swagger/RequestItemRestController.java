@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.ProducerTemplate;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.conn.HttpHostConnectException;
 import org.recap.ScsbCommonConstants;
 import org.recap.ScsbConstants;
 import org.recap.controller.AbstractController;
@@ -51,11 +52,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.net.ConnectException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -147,12 +151,17 @@ public class RequestItemRestController extends AbstractController  {
             statusCode = responseEntity.getStatusCode();
             screenMessage = responseEntity.getBody().toString();
             requestItemService.saveReceivedRequestInformation(itemRequestInfo,Boolean.TRUE);
-        } catch (HttpClientErrorException httpEx) {
+        } catch (HttpClientErrorException e) {
+            requestItemService.saveReceivedRequestInformation(itemRequestInfo,Boolean.TRUE);
+            log.error("error::", e.getMessage());
+            statusCode = e.getStatusCode();
+            screenMessage = e.getResponseBodyAsString();
+        } catch (RestClientException e){
+            log.error("error::", e.getMessage());
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
             requestItemService.saveReceivedRequestInformation(itemRequestInfo,Boolean.FALSE);
-            log.error("error-->", httpEx);
-            statusCode = httpEx.getStatusCode();
-            screenMessage = httpEx.getResponseBodyAsString();
         } catch (Exception e){
+            log.error("error::", e.getMessage());
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
             requestItemService.saveReceivedRequestInformation(itemRequestInfo,Boolean.FALSE);
         }
@@ -649,11 +658,14 @@ public class RequestItemRestController extends AbstractController  {
             statusCode = responseEntity.getStatusCode();
             screenMessage = responseEntity.getBody().toString();
             requestItemService.updateItemRequest(itemRequestInfo);
-        } catch (HttpClientErrorException httpEx) {
-            log.error("error-->", httpEx);
-            statusCode = httpEx.getStatusCode();
-            screenMessage = httpEx.getResponseBodyAsString();
+        } catch (HttpClientErrorException e) {
+            log.error("error::", e);
+            statusCode = e.getStatusCode();
+            screenMessage = e.getResponseBodyAsString();
             throw new RuntimeException();
+        } catch (RestClientException e){
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+            throw new RestClientException(HttpStatus.SERVICE_UNAVAILABLE.toString());
         } catch (Exception e){
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
             throw new RuntimeException();

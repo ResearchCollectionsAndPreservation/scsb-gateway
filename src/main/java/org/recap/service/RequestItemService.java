@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -68,12 +69,14 @@ public class RequestItemService {
          Boolean multiSubmit = false;
         if (requestLogReportRequest.getId() != 0) {
             ItemRequestInformation itemRequestInformation = prepareItemInfoFromrequest(requestLogReportRequest);
-
             try {
                 if (itemRequestInformation != null)
                     requestItemRestController.itemSubmitRequest(itemRequestInformation);
                 requestLogReportRequest.setStatus(ScsbConstants.SUCCESS);
-            } catch (Exception e) {
+            } catch (RestClientException e) {
+                requestLogReportRequest.setStatus(ScsbConstants.FAILED);
+                return requestLogReportRequest;
+            }catch (Exception e) {
                 requestLogReportRequest.setStatus(ScsbConstants.FAILED);
             }
 
@@ -90,7 +93,10 @@ public class RequestItemService {
                         TimeUnit.SECONDS.sleep(1);
                         if (itemRequestInformation != null)
                             requestItemRestController.itemSubmitRequest(itemRequestInformation);
-                    } catch (Exception e){
+                    }catch (RestClientException e){
+                        requestLogReportRequest.setStatus(ScsbConstants.FAILED);
+                        return requestLogReportRequest;
+                    }catch (Exception e){
                         count++;
                     }
                 }
