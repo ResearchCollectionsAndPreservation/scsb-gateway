@@ -38,7 +38,7 @@ public interface ItemRequestInformationRepository extends BaseRepository<ItemReq
     @Query(value = "select requests from ItemRequestReceivedInformationEntity requests where requests.requestInstitution = :requestInstitution and requests.date >= :fromDate and requests.date <= :toDate order by requests.date desc")
     Page<ItemRequestReceivedInformationEntity> findByInstitutionAndFromDateAndEndDate(Pageable pageable, @Param("requestInstitution") String institution,@Param("fromDate") Date fromDate,@Param("toDate") Date toDate);
 
-    @Query(value = "select requests from ItemRequestReceivedInformationEntity requests where requests.requestInstitution = :requestInstitution and requests.status = :status  and requests.date >= :fromDate and requests.date <= :toDate order by requests.date desc")
+    @Query(value = "select requests from ItemRequestReceivedInformationEntity requests where requests.status = :status  and requests.date >= :fromDate and requests.date <= :toDate order by requests.date desc")
     Page<ItemRequestReceivedInformationEntity> findByStatusAndFromDateAndEndDate(Pageable pageable,@Param("status") String status,@Param("fromDate") Date fromDate,@Param("toDate") Date toDate);
 
     @Query(value = "select requests from ItemRequestReceivedInformationEntity requests where requests.date >= :fromDate and requests.date <= :toDate order by requests.date desc")
