@@ -1,9 +1,10 @@
 package org.recap.service;
 
 import com.google.gson.Gson;
+import lombok.extern.slf4j.Slf4j;
 import org.recap.ScsbConstants;
 import org.recap.controller.swagger.RequestItemRestController;
-import org.recap.entity.ItemRequestReceivedInformationEntity;
+import org.recap.model.jpa.ItemRequestReceivedInformationEntity;
 import org.recap.model.ItemRequestInformation;
 import org.recap.model.request.RequestInfo;
 import org.recap.model.request.RequestLogReportRequest;
@@ -14,6 +15,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,24 +31,30 @@ import java.util.concurrent.TimeUnit;
  * @author Dinakar N created on 14/09/22
  */
 @Service
+@Slf4j
 public class RequestItemService {
+
     @Autowired
     private ItemRequestInformationRepository itemRequestInformationRepository;
 
     @Autowired
     private RequestItemRestController requestItemRestController;
 
-     public void saveReceivedRequestInformation(ItemRequestInformation itemRequestInfo, boolean isResponseReceived) {
-         ItemRequestReceivedInformationEntity itemRequestReceivedInformationEntity = new ItemRequestReceivedInformationEntity();
-         prepareItemRequestReceivedInformationEntity(itemRequestInfo,itemRequestReceivedInformationEntity);
-         if (isResponseReceived) {
-             itemRequestReceivedInformationEntity.setStatus("SUCCESS");
-             itemRequestReceivedInformationEntity.setStatusId(1);
-         } else {
-             itemRequestReceivedInformationEntity.setStatus("FAILED");
-             itemRequestReceivedInformationEntity.setStatusId(2);
-         }
-         itemRequestInformationRepository.save(itemRequestReceivedInformationEntity);
+    public void saveReceivedRequestInformation(ItemRequestInformation itemRequestInfo, boolean isResponseReceived) {
+        try {
+            ItemRequestReceivedInformationEntity itemRequestReceivedInformationEntity = new ItemRequestReceivedInformationEntity();
+            prepareItemRequestReceivedInformationEntity(itemRequestInfo, itemRequestReceivedInformationEntity);
+            if (isResponseReceived) {
+                itemRequestReceivedInformationEntity.setStatus(ScsbConstants.SUCCESS);
+                itemRequestReceivedInformationEntity.setStatusId(1);
+            } else {
+                itemRequestReceivedInformationEntity.setStatus(ScsbConstants.FAILED);
+                itemRequestReceivedInformationEntity.setStatusId(2);
+            }
+            itemRequestInformationRepository.save(itemRequestReceivedInformationEntity);
+        } catch (Exception e) {
+            log.info(ScsbConstants.REQUEST_LOG_EXCEPTOIN_SAVE, e.getMessage());
+        }
     }
 
     private void prepareItemRequestReceivedInformationEntity(ItemRequestInformation itemRequestInfo, ItemRequestReceivedInformationEntity itemRequestReceivedInformationEntity) {
@@ -64,17 +73,23 @@ public class RequestItemService {
     }
 
     public RequestLogReportRequest submitRequests(RequestLogReportRequest requestLogReportRequest) {
-         Integer count = 0;
-         Boolean multiSubmit = false;
-        if (requestLogReportRequest.getId() != 0) {
+        Integer count = 0;
+        Boolean multiSubmit = false;
+        if (requestLogReportRequest.getGatewayRequestLogId() != 0) {
             ItemRequestInformation itemRequestInformation = prepareItemInfoFromrequest(requestLogReportRequest);
-
             try {
                 if (itemRequestInformation != null)
-                    requestItemRestController.itemSubmitRequest(itemRequestInformation);
+                    requestItemRestController.itemSubmitRequest(itemRequestInformation,requestLogReportRequest.getGatewayRequestLogId());
                 requestLogReportRequest.setStatus(ScsbConstants.SUCCESS);
+            } catch (HttpClientErrorException e) {
+                requestLogReportRequest.setStatus(ScsbConstants.SUCCESS);
+                return requestLogReportRequest;
+            } catch (RestClientException e) {
+                requestLogReportRequest.setStatus(ScsbConstants.FAILED);
+                return requestLogReportRequest;
             } catch (Exception e) {
                 requestLogReportRequest.setStatus(ScsbConstants.FAILED);
+                return requestLogReportRequest;
             }
 
         } else {
@@ -89,34 +104,37 @@ public class RequestItemService {
                     try {
                         TimeUnit.SECONDS.sleep(1);
                         if (itemRequestInformation != null)
-                            requestItemRestController.itemSubmitRequest(itemRequestInformation);
-                    } catch (Exception e){
+                            requestItemRestController.itemSubmitRequest(itemRequestInformation,requestLogReportRequest.getGatewayRequestLogId());
+                    } catch (RestClientException e) {
+                        requestLogReportRequest.setStatus(ScsbConstants.FAILED);
+                        return requestLogReportRequest;
+                    } catch (Exception e) {
                         count++;
                     }
                 }
             }
         }
-        if(multiSubmit && count > 0){
+        if (multiSubmit && count > 0) {
             requestLogReportRequest.setStatus(ScsbConstants.PARTIALLY);
-        } else if(multiSubmit){
+        } else if (multiSubmit) {
             requestLogReportRequest.setStatus(ScsbConstants.SUCCESS);
         }
         return requestLogReportRequest;
     }
 
     private Page<ItemRequestReceivedInformationEntity> getCount(RequestLogReportRequest requestLogReportRequest) {
-         requestLogReportRequest.setPageSize(500);
+        requestLogReportRequest.setPageSize(500);
         Pageable pageable = PageRequest.of(requestLogReportRequest.getPageNumber(), requestLogReportRequest.getPageSize());
         Page<ItemRequestReceivedInformationEntity> pageReponse = null;
-        if(requestLogReportRequest.getFromDate() != null && !requestLogReportRequest.getFromDate().isEmpty()) {
+        if (requestLogReportRequest.getFromDate() != null && !requestLogReportRequest.getFromDate().isEmpty()) {
             Date requestFromDate = convertStringToDate(requestLogReportRequest.getFromDate());
             Date requestToDate = convertStringToDate(requestLogReportRequest.getToDate());
             Date fromDate = getFromDate(requestFromDate);
             Date toDate = getToDate(requestToDate);
             if (requestLogReportRequest.getInstitution() != null && !requestLogReportRequest.getInstitution().isBlank() && !requestLogReportRequest.getInstitution().isEmpty()) {
-                pageReponse = itemRequestInformationRepository.findByInstitutionAndStatusAndFromDateAndEndDate(pageable, requestLogReportRequest.getInstitution(), "FAILED",fromDate,toDate);
+                pageReponse = itemRequestInformationRepository.findByInstitutionAndStatusAndFromDateAndEndDate(pageable, requestLogReportRequest.getInstitution(), "FAILED", fromDate, toDate);
             } else {
-                pageReponse = itemRequestInformationRepository.findByStatusIdAndFromDateAndEndDate(pageable, 2,fromDate,toDate);
+                pageReponse = itemRequestInformationRepository.findByStatusIdAndFromDateAndEndDate(pageable, 2, fromDate, toDate);
             }
         } else {
             if (requestLogReportRequest.getInstitution() != null && !requestLogReportRequest.getInstitution().isBlank() && !requestLogReportRequest.getInstitution().isEmpty()) {
@@ -125,7 +143,7 @@ public class RequestItemService {
                 pageReponse = itemRequestInformationRepository.findAllByStatusId(pageable, 2);
             }
         }
-       return pageReponse;
+        return pageReponse;
     }
 
     private List<ItemRequestReceivedInformationEntity> getRequestReports(RequestLogReportRequest requestLogReportRequest) {
@@ -167,7 +185,7 @@ public class RequestItemService {
     }
 
     private RequestLogReportRequest prepareRequestReponseFromEnityList(List<ItemRequestReceivedInformationEntity> entityList, RequestLogReportRequest requestLogReportRequest) {
-         List<RequestInfo> requestInfoList = new ArrayList<>();
+        List<RequestInfo> requestInfoList = new ArrayList<>();
         for (ItemRequestReceivedInformationEntity entity : entityList) {
             RequestInfo requestInfo = new RequestInfo();
             requestInfo.setRequestInstitution(entity.getRequestInstitution());
@@ -181,25 +199,29 @@ public class RequestItemService {
         requestLogReportRequest.setRequestInfoList(requestInfoList);
         return requestLogReportRequest;
     }
+
     @Transactional
-    public void updateItemRequest(ItemRequestInformation itemRequestInfo) {
-        updateReceivedRequestInformation(itemRequestInfo,Boolean.TRUE);
+    public void updateItemRequest(Integer requestLogId) {
+        updateReceivedRequestInformation(Boolean.TRUE,requestLogId);
     }
 
-    public void updateReceivedRequestInformation(ItemRequestInformation itemRequestInfo, boolean isResponseReceived) {
-        if (isResponseReceived)
-            itemRequestInformationRepository.update(itemRequestInfo.getId(),"SUCCESS",1);
+    public void updateReceivedRequestInformation(boolean isResponseReceived, Integer requestLogId) {
+        try {
+            if (isResponseReceived)
+                itemRequestInformationRepository.update(requestLogId, ScsbConstants.SUCCESS, 1, new Date());
+        } catch (Exception e) {
+            log.info(ScsbConstants.REQUEST_LOG_EXCEPTOIN_UPDATE, e.getMessage());
+        }
     }
 
     private ItemRequestInformation prepareItemInfoFromrequest(RequestLogReportRequest requestLogReportRequest) {
-        Optional<ItemRequestReceivedInformationEntity> itemRequestReceivedInformationEntity = itemRequestInformationRepository.findById(requestLogReportRequest.getId());
+        Optional<ItemRequestReceivedInformationEntity> itemRequestReceivedInformationEntity = itemRequestInformationRepository.findById(requestLogReportRequest.getGatewayRequestLogId());
         ItemRequestInformation itemRequestInformation = null;
         if (itemRequestReceivedInformationEntity.isPresent()) {
             String requestRecieved = itemRequestReceivedInformationEntity.get().getRequestRecieved();
             Gson gsonObj = new Gson();
             itemRequestInformation = gsonObj.fromJson(requestRecieved, ItemRequestInformation.class);
         }
-        itemRequestInformation.setId(requestLogReportRequest.getId());
         return itemRequestInformation;
     }
 
@@ -208,15 +230,16 @@ public class RequestItemService {
         String requestRecieved = itemRequestReceivedInformationEntity.getRequestRecieved();
         Gson gsonObj = new Gson();
         itemRequestInformation = gsonObj.fromJson(requestRecieved, ItemRequestInformation.class);
-        itemRequestInformation.setId(itemRequestReceivedInformationEntity.getId());
         return itemRequestInformation;
     }
-    private Date convertStringToDate(String stringDate){
+
+    private Date convertStringToDate(String stringDate) {
         SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd");
         Date date = null;
         try {
             date = dt.parse(stringDate);
-        } catch (ParseException e) {}
+        } catch (ParseException e) {
+        }
         return date;
     }
 
@@ -228,6 +251,7 @@ public class RequestItemService {
         cal.set(13, 0);
         return cal.getTime();
     }
+
     public Date getToDate(Date createdDate) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(createdDate);
@@ -236,4 +260,5 @@ public class RequestItemService {
         cal.set(13, 59);
         return cal.getTime();
     }
+
 }

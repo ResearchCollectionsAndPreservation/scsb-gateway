@@ -147,12 +147,17 @@ public class RequestItemRestController extends AbstractController  {
             statusCode = responseEntity.getStatusCode();
             screenMessage = responseEntity.getBody().toString();
             requestItemService.saveReceivedRequestInformation(itemRequestInfo,Boolean.TRUE);
-        } catch (HttpClientErrorException httpEx) {
+        } catch (HttpClientErrorException e) {
+            requestItemService.saveReceivedRequestInformation(itemRequestInfo,Boolean.TRUE);
+            log.error("error::", e.getMessage());
+            statusCode = e.getStatusCode();
+            screenMessage = e.getResponseBodyAsString();
+        } catch (RestClientException e){
+            log.error("error::", e.getMessage());
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
             requestItemService.saveReceivedRequestInformation(itemRequestInfo,Boolean.FALSE);
-            log.error("error-->", httpEx);
-            statusCode = httpEx.getStatusCode();
-            screenMessage = httpEx.getResponseBodyAsString();
         } catch (Exception e){
+            log.error("error::", e.getMessage());
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
             requestItemService.saveReceivedRequestInformation(itemRequestInfo,Boolean.FALSE);
         }
@@ -634,7 +639,7 @@ public class RequestItemRestController extends AbstractController  {
         return responseEntity.getBody().toString();
     }
 
-    public ItemResponseInformation itemSubmitRequest(ItemRequestInformation itemRequestInfo) {
+    public ItemResponseInformation itemSubmitRequest(ItemRequestInformation itemRequestInfo,Integer requestLogId) {
         ItemResponseInformation itemResponseInformation = new ItemResponseInformation();
         List<String> itemBarcodes;
         HttpStatus statusCode;
@@ -648,15 +653,19 @@ public class RequestItemRestController extends AbstractController  {
             responseEntity = restTemplate.postForEntity(getScsbCircUrl() + ScsbConstants.URL_REQUEST_ITEM_VALIDATE_ITEM_REQUEST, itemRequestInfo, String.class);
             statusCode = responseEntity.getStatusCode();
             screenMessage = responseEntity.getBody().toString();
-            requestItemService.updateItemRequest(itemRequestInfo);
-        } catch (HttpClientErrorException httpEx) {
-            log.error("error-->", httpEx);
-            statusCode = httpEx.getStatusCode();
-            screenMessage = httpEx.getResponseBodyAsString();
-            throw new RuntimeException();
+            requestItemService.updateItemRequest(requestLogId);
+        } catch (HttpClientErrorException e) {
+            log.error("error::", e);
+            statusCode = e.getStatusCode();
+            screenMessage = e.getResponseBodyAsString();
+            requestItemService.updateItemRequest(requestLogId);
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+        } catch (RestClientException e){
+            statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+            throw new RestClientException(HttpStatus.SERVICE_UNAVAILABLE.toString());
         } catch (Exception e){
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            throw new RuntimeException();
+            throw new RestClientException(HttpStatus.SERVICE_UNAVAILABLE.toString());
         }
         try {
             if (statusCode != null && statusCode == HttpStatus.OK) {

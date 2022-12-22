@@ -1,6 +1,7 @@
 package org.recap.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -37,7 +38,6 @@ public class ItemRequestInformation {
     private String username;
     private String issue;
     private String volume;
-    private Integer id;
 
     /**
      * Is owning institution item boolean.
