@@ -836,8 +836,8 @@ public class RequestItemRestControllerUT extends BaseTestCase {
         ItemResponseInformation itemResponseInformation = null;
         ResponseEntity responseEntity = new ResponseEntity("Success", HttpStatus.OK);
         try {
-            Mockito.doThrow(new Exception()).when(service).saveReceivedRequestInformation(any(), Boolean.TRUE);
-            Mockito.doThrow(new Exception()).when(service).saveReceivedRequestInformation(any(), Boolean.FALSE);
+            Mockito.doThrow(new Exception()).when(service).saveReceivedRequestInformation(any(), any(),Boolean.TRUE);
+            Mockito.doThrow(new Exception()).when(service).saveReceivedRequestInformation(any(), any(),Boolean.FALSE);
             Mockito.when(mockRestTemplate.postForEntity(getScsbCircUrl() + ScsbConstants.URL_REQUEST_ITEM_VALIDATE_ITEM_REQUEST, getItemRequestInformation(), String.class)).thenReturn(responseEntity);
             itemResponseInformation = requestItemRestController.itemRequest(getItemRequestInformation());
             assertNotNull(itemResponseInformation);
@@ -856,8 +856,8 @@ public class RequestItemRestControllerUT extends BaseTestCase {
         ItemResponseInformation itemResponseInformation = null;
         ResponseEntity responseEntity = new ResponseEntity("Success", HttpStatus.OK);
         try {
-            Mockito.doThrow(new Exception()).when(service).saveReceivedRequestInformation(any(ItemRequestInformation.class), Boolean.TRUE);
-            Mockito.doThrow(new Exception()).when(service).saveReceivedRequestInformation(any(ItemRequestInformation.class), Boolean.FALSE);
+            Mockito.doThrow(new Exception()).when(service).saveReceivedRequestInformation(any(ItemRequestInformation.class),any(String.class), Boolean.TRUE);
+            Mockito.doThrow(new Exception()).when(service).saveReceivedRequestInformation(any(ItemRequestInformation.class),any(String.class), Boolean.FALSE);
             Mockito.when(mockRestTemplate.postForEntity(getScsbCircUrl() + ScsbConstants.URL_REQUEST_ITEM_VALIDATE_ITEM_REQUEST, getItemRequestInformation(), String.class)).thenThrow(new Exception("Exception occured"));
             itemResponseInformation = requestItemRestController.itemRequest(getItemRequestInformation());
             assertNotNull(itemResponseInformation);

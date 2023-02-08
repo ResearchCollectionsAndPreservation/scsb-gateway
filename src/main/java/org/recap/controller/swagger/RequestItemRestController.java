@@ -146,20 +146,20 @@ public class RequestItemRestController extends AbstractController  {
             responseEntity = restTemplate.postForEntity(getScsbCircUrl() + ScsbConstants.URL_REQUEST_ITEM_VALIDATE_ITEM_REQUEST, itemRequestInfo, String.class);
             statusCode = responseEntity.getStatusCode();
             screenMessage = responseEntity.getBody().toString();
-            requestItemService.saveReceivedRequestInformation(itemRequestInfo,Boolean.TRUE);
+            requestItemService.saveReceivedRequestInformation(itemRequestInfo,"",Boolean.TRUE);
         } catch (HttpClientErrorException e) {
-            requestItemService.saveReceivedRequestInformation(itemRequestInfo,Boolean.TRUE);
-            log.error("error::", e.getMessage());
+            requestItemService.saveReceivedRequestInformation(itemRequestInfo,e.getMessage(),Boolean.TRUE);
+            log.error(ScsbConstants.ERROR_LOG, e.getMessage());
             statusCode = e.getStatusCode();
             screenMessage = e.getResponseBodyAsString();
         } catch (RestClientException e){
-            log.error("error::", e.getMessage());
+            log.error(ScsbConstants.ERROR_LOG, e.getMessage());
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            requestItemService.saveReceivedRequestInformation(itemRequestInfo,Boolean.FALSE);
+            requestItemService.saveReceivedRequestInformation(itemRequestInfo,e.getMessage(),Boolean.FALSE);
         } catch (Exception e){
-            log.error("error::", e.getMessage());
+            log.error(ScsbConstants.ERROR_LOG, e.getMessage());
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-            requestItemService.saveReceivedRequestInformation(itemRequestInfo,Boolean.FALSE);
+            requestItemService.saveReceivedRequestInformation(itemRequestInfo,e.getMessage(),Boolean.FALSE);
         }
         try {
             if (statusCode != null && statusCode == HttpStatus.OK) {
@@ -653,12 +653,12 @@ public class RequestItemRestController extends AbstractController  {
             responseEntity = restTemplate.postForEntity(getScsbCircUrl() + ScsbConstants.URL_REQUEST_ITEM_VALIDATE_ITEM_REQUEST, itemRequestInfo, String.class);
             statusCode = responseEntity.getStatusCode();
             screenMessage = responseEntity.getBody().toString();
-            requestItemService.updateItemRequest(requestLogId);
+            requestItemService.updateItemRequest("",requestLogId);
         } catch (HttpClientErrorException e) {
             log.error("error::", e);
             statusCode = e.getStatusCode();
             screenMessage = e.getResponseBodyAsString();
-            requestItemService.updateItemRequest(requestLogId);
+            requestItemService.updateItemRequest(e.getMessage(),requestLogId);
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
         } catch (RestClientException e){
             statusCode = HttpStatus.INTERNAL_SERVER_ERROR;

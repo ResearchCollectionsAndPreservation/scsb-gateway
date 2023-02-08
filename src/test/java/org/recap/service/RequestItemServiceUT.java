@@ -415,7 +415,7 @@ public class RequestItemServiceUT extends BaseTestCase {
             itemRequestReceivedInformationEntity.setStatusId(1);
             boolean isResponseReceived = true;
             Mockito.when(repository.save(Mockito.any())).thenReturn(itemRequestReceivedInformationEntity);
-            service.saveReceivedRequestInformation(itemRequestInfo, isResponseReceived);
+            service.saveReceivedRequestInformation(itemRequestInfo,"", isResponseReceived);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -431,7 +431,7 @@ public class RequestItemServiceUT extends BaseTestCase {
             itemRequestReceivedInformationEntity.setStatusId(2);
             boolean isResponseReceived = false;
             Mockito.when(repository.save(Mockito.any())).thenReturn(itemRequestReceivedInformationEntity);
-            service.saveReceivedRequestInformation(itemRequestInfo, isResponseReceived);
+            service.saveReceivedRequestInformation(itemRequestInfo,"", isResponseReceived);
         } catch (Exception e) {
             e.printStackTrace();
         }
