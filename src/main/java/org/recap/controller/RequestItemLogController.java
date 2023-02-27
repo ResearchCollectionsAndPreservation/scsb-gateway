@@ -35,7 +35,7 @@ public class RequestItemLogController extends AbstractController {
             requestLogReportResponse = requestItemService.submitRequests(requestLogReportRequest);
         } catch (Exception e) {
             requestLogReportResponse = new RequestLogReportRequest();
-            requestLogReportResponse.setStatus(ScsbConstants.FAILED);
+            requestLogReportResponse.setStatus(ScsbConstants.FAILURE);
         }
         return new ResponseEntity<>(requestLogReportResponse, HttpStatus.OK);
     }

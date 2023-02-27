@@ -48,7 +48,7 @@ public class RequestItemService {
                 itemRequestReceivedInformationEntity.setStatus(ScsbConstants.SUCCESS);
                 itemRequestReceivedInformationEntity.setStatusId(1);
             } else {
-                itemRequestReceivedInformationEntity.setStatus(ScsbConstants.FAILED);
+                itemRequestReceivedInformationEntity.setStatus(ScsbConstants.FAILURE);
                 itemRequestReceivedInformationEntity.setStatusId(2);
             }
             responseMessage = responseMessage.replace("400 : ","");
@@ -88,10 +88,10 @@ public class RequestItemService {
                 requestLogReportRequest.setStatus(ScsbConstants.SUCCESS);
                 return requestLogReportRequest;
             } catch (RestClientException e) {
-                requestLogReportRequest.setStatus(ScsbConstants.FAILED);
+                requestLogReportRequest.setStatus(ScsbConstants.FAILURE);
                 return requestLogReportRequest;
             } catch (Exception e) {
-                requestLogReportRequest.setStatus(ScsbConstants.FAILED);
+                requestLogReportRequest.setStatus(ScsbConstants.FAILURE);
                 return requestLogReportRequest;
             }
 
@@ -109,7 +109,7 @@ public class RequestItemService {
                         if (itemRequestInformation != null)
                             requestItemRestController.itemSubmitRequest(itemRequestInformation,requestLogReportRequest.getGatewayRequestLogId());
                     } catch (RestClientException e) {
-                        requestLogReportRequest.setStatus(ScsbConstants.FAILED);
+                        requestLogReportRequest.setStatus(ScsbConstants.FAILURE);
                         return requestLogReportRequest;
                     } catch (Exception e) {
                         count++;

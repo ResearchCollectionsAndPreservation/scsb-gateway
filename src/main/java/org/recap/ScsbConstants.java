@@ -63,7 +63,7 @@ public final class ScsbConstants {
 
     public static final String SUCCESS = "SUCCESS";
 
-    public static final String FAILED = "FAILED";
+    public static final String FAILURE = "FAILURE";
 
     public static final String PARTIALLY = "PARTIALLY";
 
