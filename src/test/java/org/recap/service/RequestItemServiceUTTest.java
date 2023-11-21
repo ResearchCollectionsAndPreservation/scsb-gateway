@@ -16,12 +16,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doThrow;
 
 /**
  * @author Dinakar N created on 08/11/22
@@ -52,6 +58,22 @@ public class RequestItemServiceUTTest extends BaseTestCaseUT {
         Mockito.when(itemRequestInformationRepository.findById(Mockito.any(Integer.class))).thenReturn(itemRequestReceivedInformationEntity);
         requestItemService.submitRequests(getRequestLogReportRequest());
     }
+
+    @Test
+    public void restClientExceptionTest(){
+        Optional<ItemRequestReceivedInformationEntity> itemRequestReceivedInformationEntity = getItemRequestReceivedInformationEntity();
+        Mockito.when(itemRequestInformationRepository.findById(Mockito.any(Integer.class))).thenReturn(itemRequestReceivedInformationEntity);
+        doThrow(RestClientException.class).when(requestItemRestController).itemSubmitRequest(any(), anyInt());
+        requestItemService.submitRequests(getRequestLogReportRequest());
+    }
+    @Test
+    public void testSubmitRequestException(){
+        Optional<ItemRequestReceivedInformationEntity> itemRequestReceivedInformationEntity = getItemRequestReceivedInformationEntity();
+        Mockito.when(itemRequestInformationRepository.findById(Mockito.any(Integer.class))).thenReturn(itemRequestReceivedInformationEntity);
+        doThrow(HttpClientErrorException.class).when(requestItemRestController).itemSubmitRequest(any(), anyInt());
+        requestItemService.submitRequests(getRequestLogReportRequest());
+    }
+
     public RequestLogReportRequest getRequestLogReportRequest() {
         RequestLogReportRequest requestLogReportRequest = new RequestLogReportRequest();
         requestLogReportRequest.setInstitution("TEST");
