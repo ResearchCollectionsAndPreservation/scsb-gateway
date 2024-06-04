@@ -44,7 +44,7 @@ public class SwaggerInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        log.info("AUTHENTICATION IS TAKING PLACE");
+        //log.info("AUTHENTICATION IS TAKING PLACE");
         boolean continueExport = false;
         String date = new Date().toString();
         String key = request.getHeader(ScsbCommonConstants.API_KEY);
