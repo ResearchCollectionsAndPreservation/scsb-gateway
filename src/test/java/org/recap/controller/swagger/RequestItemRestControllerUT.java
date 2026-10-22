@@ -17,18 +17,23 @@ import org.recap.service.RequestItemService;
 import org.recap.service.RestHeaderService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -84,6 +89,7 @@ public class RequestItemRestControllerUT extends BaseTestCase {
         MockitoAnnotations.initMocks(this);
         ReflectionTestUtils.setField(requestItemRestController, "scsbCircUrl", scsbCircUrl);
         ReflectionTestUtils.setField(requestItemRestController, "restHeaderService", restHeaderService);
+        ReflectionTestUtils.setField(requestItemRestController, "restTemplate", mockRestTemplate);
         ReflectionTestUtils.setField(mockRequestItemRestController, "restTemplate", mockRestTemplate);
     }
 
@@ -981,5 +987,106 @@ public class RequestItemRestControllerUT extends BaseTestCase {
         }
     }
 
+    @Test
+    public void testItemRequestStatus_validRequest() {
+        RequestStatusRequest requestStatusRequest = new RequestStatusRequest();
+        requestStatusRequest.setBarcodes(Arrays.asList("barcode-1", "barcode-2"));
+        Mockito.when(mockRestTemplate.postForObject(getScsbCircUrl() + "requestItem/requestStatus", requestStatusRequest, String.class)).thenReturn("{\"status\":\"OK\"}");
+
+        ResponseEntity responseEntity = requestItemRestController.itemRequestStatus(requestStatusRequest);
+
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals("{\"status\":\"OK\"}", responseEntity.getBody());
+    }
+
+    @Test
+    public void testItemRequestStatus_nullRequest() {
+        ResponseEntity responseEntity = requestItemRestController.itemRequestStatus(null);
+
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(ScsbCommonConstants.ITEM_BARCDE_DOESNOT_EXIST, responseEntity.getBody());
+    }
+
+    @Test
+    public void testItemRequestStatus_nullBarcodes() {
+        RequestStatusRequest requestStatusRequest = new RequestStatusRequest();
+
+        ResponseEntity responseEntity = requestItemRestController.itemRequestStatus(requestStatusRequest);
+
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(ScsbCommonConstants.ITEM_BARCDE_DOESNOT_EXIST, responseEntity.getBody());
+    }
+
+    @Test
+    public void testItemRequestStatus_emptyBarcodes() {
+        RequestStatusRequest requestStatusRequest = new RequestStatusRequest();
+        requestStatusRequest.setBarcodes(new ArrayList<>());
+
+        ResponseEntity responseEntity = requestItemRestController.itemRequestStatus(requestStatusRequest);
+
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(ScsbCommonConstants.ITEM_BARCDE_DOESNOT_EXIST, responseEntity.getBody());
+    }
+
+    @Test
+    public void testItemRequestStatus_moreThanHundredBarcodes() {
+        RequestStatusRequest requestStatusRequest = new RequestStatusRequest();
+        List<String> barcodes = new ArrayList<>();
+        for (int i = 0; i <= 100; i++) {
+            barcodes.add("barcode-" + i);
+        }
+        requestStatusRequest.setBarcodes(barcodes);
+
+        ResponseEntity responseEntity = requestItemRestController.itemRequestStatus(requestStatusRequest);
+
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals("Maximum Allowed limit of 100 Barcodes exceeded", responseEntity.getBody());
+    }
+
+    @Test
+    public void testItemRequestStatus_nullResponseFromService() {
+        RequestStatusRequest requestStatusRequest = new RequestStatusRequest();
+        requestStatusRequest.setBarcodes(Arrays.asList("barcode-1"));
+        Mockito.when(mockRestTemplate.postForObject(getScsbCircUrl() + "requestItem/requestStatus", requestStatusRequest, String.class)).thenReturn(null);
+
+        ResponseEntity responseEntity = requestItemRestController.itemRequestStatus(requestStatusRequest);
+
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(ScsbCommonConstants.ITEM_BARCDE_DOESNOT_EXIST, responseEntity.getBody());
+    }
+
+    @Test
+    public void testItemRequestStatus_httpServerErrorException() {
+        RequestStatusRequest requestStatusRequest = new RequestStatusRequest();
+        requestStatusRequest.setBarcodes(Arrays.asList("barcode-1"));
+        HttpServerErrorException exception = new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", HttpHeaders.EMPTY,
+                "Server error body".getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+        Mockito.when(mockRestTemplate.postForObject(getScsbCircUrl() + "requestItem/requestStatus", requestStatusRequest, String.class)).thenThrow(exception);
+
+        ResponseEntity responseEntity = requestItemRestController.itemRequestStatus(requestStatusRequest);
+
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+        assertEquals("Server error body", responseEntity.getBody());
+    }
+
+    @Test
+    public void testItemRequestStatus_runtimeException() {
+        RequestStatusRequest requestStatusRequest = new RequestStatusRequest();
+        requestStatusRequest.setBarcodes(Arrays.asList("barcode-1"));
+        Mockito.when(mockRestTemplate.postForObject(getScsbCircUrl() + "requestItem/requestStatus", requestStatusRequest, String.class)).thenThrow(new RuntimeException("boom"));
+
+        ResponseEntity responseEntity = requestItemRestController.itemRequestStatus(requestStatusRequest);
+
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.SERVICE_UNAVAILABLE, responseEntity.getStatusCode());
+        assertEquals(ScsbCommonConstants.SCSB_SOLR_CLIENT_SERVICE_UNAVAILABLE, responseEntity.getBody());
+    }
 
 }
